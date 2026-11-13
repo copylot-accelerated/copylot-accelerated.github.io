@@ -60,6 +60,7 @@ output.
 ```text
 .
 ├── .github/workflows/deploy.yml   # GitHub Pages build and deployment
+├── brand/                         # Square profile/avatar images and source
 ├── public/
 │   ├── favicon.svg
 │   ├── hero-optical-field-light-800.webp / -1000.webp / -1400.webp
@@ -304,6 +305,18 @@ inkscape public/og.svg \
 The illustration is decorative and is not a simulation result. The SVG source
 uses Inter; Inkscape falls back to an available sans font if Inter is not
 installed, so check the rendered PNG after regenerating it.
+
+## Brand assets
+
+Square profile and avatar images are in `brand/`:
+
+- `copylot-accelerated-mark-1024.png` — master, 1024 × 1024.
+- `copylot-accelerated-mark-512.png` — GitHub and social-profile upload size.
+- `copylot-accelerated-mark.svg` — editable source with safe-area padding for
+  circular avatar crops.
+
+The mark matches `public/favicon.svg`; the extra padding keeps the orange
+diagonal inside GitHub's circular crop.
 
 ## Verification and deployment
 
