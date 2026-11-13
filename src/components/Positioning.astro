@@ -1,0 +1,40 @@
+---
+import SectionHeader from "./SectionHeader.astro";
+
+const pillars = [
+  {
+    title: "Original model",
+    body: "SolarPILOT and CoPylot provide the optical formulation and Python API.",
+  },
+  {
+    title: "Accelerated execution",
+    body: "Refactored CPU, multicore CPU and CUDA paths for different hardware.",
+  },
+  {
+    title: "Validated packages",
+    body: "Versioned archives for Linux, Windows and macOS.",
+  },
+];
+---
+
+<section class="site-container py-20 md:py-28">
+  <SectionHeader
+    label="Built on SolarPILOT / CoPylot"
+    title="A proven model. A faster execution layer."
+  />
+
+  <div class="mt-12 grid gap-8 md:grid-cols-3 lg:mt-16">
+    {
+      pillars.map((pillar) => (
+        <article class="border-t border-line pt-5">
+          <h3 class="text-base font-medium tracking-[-0.02em] text-ink">
+            {pillar.title}
+          </h3>
+          <p class="mt-2 max-w-xs text-sm leading-relaxed text-muted">
+            {pillar.body}
+          </p>
+        </article>
+      ))
+    }
+  </div>
+</section>

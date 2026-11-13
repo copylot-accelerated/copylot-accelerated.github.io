@@ -1,0 +1,138 @@
+---
+import "@fontsource-variable/inter/wght.css";
+import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+import "../styles/global.css";
+
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { absoluteUrl, SITE, withBase } from "../config/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Route path without the base prefix, always with a trailing slash. */
+  path?: string;
+  active?: "home" | "downloads" | "docs";
+  ogType?: "website" | "article";
+  noindex?: boolean;
+  structuredData?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  path = "/",
+  active = "home",
+  ogType = "website",
+  noindex = false,
+  structuredData = false,
+} = Astro.props;
+
+const pageTitle = title ? `${title} — ${SITE.name}` : SITE.title;
+const canonical = absoluteUrl(path);
+const socialImage = absoluteUrl("/og.png");
+const robots =
+  SITE.indexable && !noindex
+    ? "index, follow, max-image-preview:large"
+    : "noindex, nofollow";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  name: SITE.name,
+  description: SITE.description,
+  url: SITE.url,
+  codeRepository: SITE.repository.url,
+  license: SITE.docs.license,
+  programmingLanguage: ["Python", "C++", "CUDA"],
+  author: {
+    "@type": "Person",
+    name: SITE.author,
+  },
+};
+---
+
+<!doctype html>
+<html lang="en" data-theme-mode="system">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={robots} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="author" content={SITE.author} />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfaf7" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0b0b" />
+
+    <link
+      rel="preload"
+      href={interLatin}
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    {
+      SITE.indexable && (
+        <link
+          rel="sitemap"
+          type="application/xml"
+          title="Sitemap"
+          href={withBase("/sitemap.xml")}
+        />
+      )
+    }
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="CoPylot-Accelerated — heliostat field optical simulation"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+
+    {
+      structuredData && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(schema)}
+        />
+      )
+    }
+
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem("site-theme");
+          const mode =
+            stored === "light" || stored === "dark" ? stored : "system";
+          document.documentElement.dataset.themeMode = mode;
+          if (mode === "light" || mode === "dark") {
+            document.documentElement.dataset.theme = mode;
+          }
+        } catch {
+          document.documentElement.dataset.themeMode = "system";
+        }
+      })();
+    </script>
+  </head>
+  <body class="flex min-h-screen flex-col bg-paper text-ink antialiased">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header active={active} />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,68 @@
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # Refresh the build-time release data without a manual push.
+  schedule:
+    - cron: "17 5 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check, build and validate the site
+        run: npm run verify
+        env:
+          # Build-only token, used only to raise the GitHub Releases API rate
+          # limit. It is never sent to the browser. Public releases do not
+          # require a token.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Keep noindex enabled until the public launch is approved.
+          # Set the repository variable SITE_INDEXABLE=true at launch.
+          SITE_INDEXABLE: ${{ vars.SITE_INDEXABLE || 'false' }}
+
+      - name: Verify release resolution with fixtures
+        run: npm run test:releases && npm run test:prerelease
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload the Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

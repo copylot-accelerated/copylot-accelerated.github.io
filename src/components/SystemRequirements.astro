@@ -1,0 +1,65 @@
+---
+import { SITE } from "../config/site";
+
+const requirements = [
+  {
+    platform: "Linux x86-64 · CPU",
+    requirement: "glibc 2.34+ · libstdc++ · libgcc",
+  },
+  {
+    platform: "Linux x86-64 · CUDA",
+    requirement: "CUDA Runtime 13.0.88 · SM 89 GPU · driver 580.82.07+",
+  },
+  {
+    platform: "Windows x86-64 · CPU",
+    requirement: "x64 Visual C++ runtime",
+  },
+  {
+    platform: "macOS Intel · CPU",
+    requirement: "macOS 15+ · matching Python architecture",
+  },
+  {
+    platform: "macOS Apple Silicon · CPU",
+    requirement: "macOS 15+ · matching Python architecture",
+  },
+];
+---
+
+<section id="requirements" class="site-container py-16 md:py-20">
+  <div class="border-t border-line pt-6">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="eyebrow">Requirements</p>
+        <h2
+          class="mt-3 text-[clamp(1.9rem,3.5vw,2.6rem)] leading-[1.02] tracking-[-0.04em]"
+        >
+          Runtime requirements
+        </h2>
+      </div>
+      <p class="max-w-md text-xs leading-relaxed text-muted">
+        Native runtimes are installed separately. Python 3.12 is recommended.
+      </p>
+    </div>
+
+    <div class="mt-6 divide-y divide-line border-y border-line">
+      {
+        requirements.map((item) => (
+          <div class="grid gap-1 py-3 text-sm sm:grid-cols-2 sm:gap-6">
+            <span class="text-ink-soft">{item.platform}</span>
+            <span class="text-muted sm:text-right">{item.requirement}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="mt-3 text-xs leading-relaxed text-muted">
+      CUDA is Linux x86-64 only. Windows and macOS packages are CPU-only.
+      <a
+        class="link-underline"
+        href={SITE.docs.packaging}
+        target="_blank"
+        rel="noopener noreferrer">Packaging guide ↗</a
+      >
+    </p>
+  </div>
+</section>

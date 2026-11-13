@@ -1,0 +1,111 @@
+---
+import Icon from "./Icon.astro";
+import LogoMark from "./LogoMark.astro";
+import { SITE, withBase } from "../config/site";
+
+const groups = [
+  {
+    title: "Project",
+    links: [
+      { label: "Releases", href: SITE.repository.releases },
+      { label: "Citation", href: SITE.docs.citation },
+    ],
+  },
+  {
+    title: "Documentation",
+    links: [
+      { label: "Installation", href: SITE.docs.installation },
+      { label: "Execution backends", href: SITE.docs.backend },
+      { label: "Benchmarks", href: SITE.docs.benchmarkEvidence },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Project license", href: SITE.docs.license },
+      { label: "Documentation license", href: SITE.docs.docsLicense },
+      { label: "Data license", href: SITE.docs.dataLicense },
+      { label: "Third-party notices", href: SITE.docs.notices },
+    ],
+  },
+] as const;
+---
+
+<footer class="border-t border-line">
+  <div class="site-container py-14 md:py-16">
+    <div class="grid gap-12 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-5">
+        <a
+          href={withBase("/")}
+          class="inline-flex items-center gap-2.5"
+          aria-label={`${SITE.name} home`}
+        >
+          <LogoMark size={24} class="text-ink" />
+          <span class="text-[16px] tracking-[-0.02em]">
+            <span class="font-semibold">CoPylot</span><span
+              class="font-normal text-muted">-Accelerated</span
+            >
+          </span>
+        </a>
+        <p class="mt-5 max-w-sm text-sm leading-relaxed text-muted">
+          Accelerated, packaged and validated heliostat-field optics.
+        </p>
+        <p class="mt-5 max-w-sm text-xs leading-relaxed text-muted">
+          Built on
+          <a
+            class="link-underline"
+            href={SITE.upstream.solarPilot}
+            target="_blank"
+            rel="noopener noreferrer">SolarPILOT™</a
+          >
+          and CoPylot. Independent project.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-8 sm:grid-cols-3 md:col-span-7">
+        {
+          groups.map((group) => (
+            <div>
+              <h2 class="eyebrow">{group.title}</h2>
+              <ul class="mt-4 space-y-2.5">
+                {group.links.map((link) => (
+                  <li>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-start gap-1 text-sm leading-snug text-ink-soft transition-colors hover:text-accent"
+                    >
+                      {link.label}
+                      <Icon
+                        name="arrow-up-right"
+                        size={11}
+                        class="mt-0.5 shrink-0 text-muted"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div
+      class="mt-12 flex flex-col gap-3 border-t border-line pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {SITE.buildYear} Javier Bonilla.</p>
+      <a
+        class="link-underline inline-flex items-center gap-1"
+        href={SITE.repository.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub repository
+        <Icon name="arrow-up-right" size={12} />
+        <span class="sr-only">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+</footer>

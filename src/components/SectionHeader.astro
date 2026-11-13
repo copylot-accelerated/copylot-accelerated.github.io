@@ -1,0 +1,25 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  lead?: string;
+}
+
+const { label, title, lead } = Astro.props;
+---
+
+<div class="mx-auto max-w-3xl text-center">
+  {label && <p class="eyebrow">{label}</p>}
+  <h2
+    class="mt-4 text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[1.02] tracking-[-0.045em]"
+  >
+    {title}
+  </h2>
+  {
+    lead && (
+      <p class="mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed text-muted sm:text-base">
+        {lead}
+      </p>
+    )
+  }
+</div>

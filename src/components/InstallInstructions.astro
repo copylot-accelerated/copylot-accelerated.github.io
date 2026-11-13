@@ -1,0 +1,56 @@
+---
+import { SITE } from "../config/site";
+---
+
+<section id="install" class="site-container py-16 md:py-20">
+  <div class="border-t border-line pt-6">
+    <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+      <div class="min-w-0 lg:col-span-4">
+        <p class="eyebrow">Install</p>
+        <h2
+          class="mt-3 text-[clamp(1.9rem,3.5vw,2.6rem)] leading-[1.02] tracking-[-0.04em]"
+        >
+          Install and verify
+        </h2>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted">
+          Extract the archive and run the included example. Python 3.12 is
+          recommended.
+        </p>
+        <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+          <a
+            class="link-underline"
+            href={SITE.docs.installation}
+            target="_blank"
+            rel="noopener noreferrer">Installation guide ↗</a
+          >
+          <a
+            class="link-underline"
+            href={SITE.docs.build}
+            target="_blank"
+            rel="noopener noreferrer">Build from source ↗</a
+          >
+        </div>
+      </div>
+
+      <div class="min-w-0 lg:col-span-8">
+        <p class="eyebrow">Linux / macOS</p>
+        <pre class="code-block mt-2"><code>python3.12 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python example.py --mode refactored</code></pre>
+
+        <p class="eyebrow mt-4">Windows PowerShell</p>
+        <pre class="code-block mt-2"><code>py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe example.py --mode refactored</code></pre>
+
+        <p class="mt-4 text-xs leading-relaxed text-muted">
+          Verify with
+          <code class="code-inline">sha256sum -c SHA256SUMS.txt</code> on Linux or
+          <code class="code-inline">shasum -a 256 -c SHA256SUMS.txt</code> on
+          macOS. On Windows, use
+          <code class="code-inline">Get-FileHash</code>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

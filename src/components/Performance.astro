@@ -1,0 +1,136 @@
+---
+import SectionHeader from "./SectionHeader.astro";
+import {
+  commercialAnnual,
+  formatDuration,
+  formatExactSeconds,
+  formatSpeedup,
+  formatThroughput,
+  speedupOverOriginal,
+} from "../data/benchmarks";
+import { SITE } from "../config/site";
+
+const maxSpeedup = Math.max(
+  ...commercialAnnual.rows.map((row) =>
+    speedupOverOriginal(commercialAnnual, row),
+  ),
+);
+
+const rows = commercialAnnual.rows.map((row) => {
+  const speedup = speedupOverOriginal(commercialAnnual, row);
+  return {
+    ...row,
+    speedup,
+    barWidth: Math.max((speedup / maxSpeedup) * 100, 0.75),
+  };
+});
+---
+
+<section id="performance" class="site-container py-20 md:py-28">
+  <SectionHeader
+    label="Measured performance"
+    title="A complete year, measured."
+    lead="Total wall time; lower is better."
+  />
+
+  <div
+    class="mt-12 grid gap-10 rounded-md border border-line bg-paper-raised p-6 sm:p-8 lg:mt-16 lg:grid-cols-12 lg:items-center lg:gap-12 lg:p-10"
+  >
+    <div
+      class="border-b border-line pb-8 lg:col-span-4 lg:border-b-0 lg:border-r lg:border-line lg:pb-0 lg:pr-10"
+    >
+      <p class="eyebrow eyebrow-accent">Peak measured</p>
+      <p
+        class="mt-3 text-[clamp(3.5rem,7vw,5.4rem)] font-medium leading-none tracking-[-0.065em]"
+      >
+        {formatSpeedup(maxSpeedup)}
+      </p>
+      <p class="mt-4 text-sm leading-relaxed text-ink-soft">
+        faster than the Original path
+      </p>
+      <p class="mt-1 text-xs leading-relaxed text-muted">
+        CUDA GPU · commercial annual workload · total wall time
+      </p>
+    </div>
+
+    <div class="lg:col-span-8">
+      <div class="space-y-5" aria-hidden="true">
+        {
+          rows.map((row) => (
+            <div>
+              <div class="flex items-baseline justify-between gap-4">
+                <div class="min-w-0">
+                  <span class="text-sm font-medium text-ink">{row.label}</span>
+                  <span class="ml-2 hidden font-mono text-[10px] uppercase tracking-[0.08em] text-muted sm:inline">
+                    {row.tag}
+                  </span>
+                </div>
+                <span class="shrink-0 font-mono text-xs tabular-nums text-ink-soft">
+                  {formatDuration(row.totalWallSeconds)}
+                </span>
+              </div>
+              <div class="mt-2 flex items-center gap-3">
+                <div class="h-1.5 min-w-0 flex-1 bg-paper-sunken">
+                  <div
+                    class:list={[
+                      "h-full",
+                      row.mode === "cuda" ? "bg-accent" : "bg-ink",
+                    ]}
+                    style={`width: ${row.barWidth.toFixed(2)}%`}
+                  />
+                </div>
+                <span class="w-16 shrink-0 text-right font-mono text-xs tabular-nums text-ink-soft">
+                  {formatSpeedup(row.speedup)}
+                </span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="sr-only">
+    <table>
+      <caption>
+        Commercial annual workload: total wall time, evaluation throughput and
+        wall-clock speed-up over the Original path.
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Mode</th>
+          <th scope="col">Total wall time (seconds)</th>
+          <th scope="col">Evaluation throughput (states per second)</th>
+          <th scope="col">Speed-up over Original</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr>
+              <th scope="row">{row.label}</th>
+              <td>{formatExactSeconds(row.totalWallSeconds)}</td>
+              <td>{formatThroughput(row.evaluationStatesPerSecond)}</td>
+              <td>{formatSpeedup(row.speedup)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div
+    class="mt-8 flex flex-col gap-3 border-t border-line pt-5 text-xs leading-relaxed text-muted sm:flex-row sm:items-center sm:justify-between"
+  >
+    <p>
+      CPU modes agree bitwise · CUDA within rtol 1e-9 / atol 1e-10 · Linux,
+      Windows and macOS
+    </p>
+    <a
+      class="link-underline shrink-0"
+      href={SITE.docs.benchmarkEvidence}
+      target="_blank"
+      rel="noopener noreferrer">Benchmark evidence ↗</a
+    >
+  </div>
+</section>

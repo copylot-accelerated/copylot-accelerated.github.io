@@ -1,0 +1,64 @@
+---
+import HeroVisual from "./HeroVisual.astro";
+import Icon from "./Icon.astro";
+import { SITE, withBase } from "../config/site";
+---
+
+<section class="border-b border-line">
+  <div class="site-container pt-20 pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24">
+    <div class="mx-auto max-w-5xl text-center">
+      <p
+        class="rise flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] tracking-[0.12em]"
+      >
+        <span class="font-mono normal-case text-ink">CoPylot-Accelerated</span>
+        <span
+          class="hidden h-3 w-px bg-line-strong sm:block"
+          aria-hidden="true"></span>
+        <span class="font-mono uppercase tracking-[0.16em] text-muted"
+          >Accelerated optical simulation</span
+        >
+      </p>
+
+      <h1
+        class="rise rise-delay-1 mx-auto mt-5 max-w-5xl text-[clamp(2.7rem,7vw,5.8rem)] leading-[0.95] tracking-[-0.055em]"
+      >
+        <span class="whitespace-nowrap">Heliostat-field</span> optics, accelerated.
+      </h1>
+
+      <p
+        class="rise rise-delay-1 mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-muted sm:text-lg"
+      >
+        A faster execution layer for the
+        <strong class="font-semibold text-ink">SolarPILOT/CoPylot</strong> optical
+        model, with optimized CPU, multicore and CUDA paths in validated
+        packages.
+      </p>
+
+      <div
+        class="rise rise-delay-2 mt-8 flex flex-wrap items-center justify-center gap-3"
+      >
+        <a href={withBase("/downloads/")} class="btn btn-primary">
+          <Icon name="download" size={16} />
+          Download
+        </a>
+        <a href={withBase("/docs/")} class="btn btn-secondary">
+          <Icon name="book-open" size={16} />
+          Documentation
+        </a>
+        <a
+          href={SITE.repository.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-ghost"
+        >
+          <Icon name="github" size={16} />
+          GitHub
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+      </div>
+
+    </div>
+
+    <HeroVisual />
+  </div>
+</section>

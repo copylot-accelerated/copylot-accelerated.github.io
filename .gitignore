@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Astro output
+dist/
+dist-fixture/
+dist-indexable/
+.astro/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Logs and editor files
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.local

@@ -1,0 +1,102 @@
+---
+import { withBase } from "../config/site";
+
+const light800 = withBase("/hero-optical-field-light-800.webp");
+const light1000 = withBase("/hero-optical-field-light-1000.webp");
+const light1400 = withBase("/hero-optical-field-light-1400.webp");
+const dark800 = withBase("/hero-optical-field-dark-800.webp");
+const dark1000 = withBase("/hero-optical-field-dark-1000.webp");
+const dark1400 = withBase("/hero-optical-field-dark-1400.webp");
+const sizes = "(min-width: 1024px) 860px, (min-width: 640px) 704px, 100vw";
+const placeholder =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+---
+
+<figure class="mx-auto mt-10 max-w-[860px] sm:mt-14">
+  <div
+    class="relative mx-auto aspect-[16/9] w-full overflow-hidden"
+    role="img"
+    aria-label="Illustrative isometric diagram of a central solar receiver tower surrounded by concentric rings of heliostats, with sunlight reflected toward the receiver"
+  >
+    <img
+      id="hero-visual"
+      src={placeholder}
+      data-light-src={light800}
+      data-dark-src={dark800}
+      data-light-srcset={`${light800} 800w, ${light1000} 1000w, ${light1400} 1400w`}
+      data-dark-srcset={`${dark800} 800w, ${dark1000} 1000w, ${dark1400} 1400w`}
+      width="1672"
+      height="941"
+      sizes={sizes}
+      alt=""
+      aria-hidden="true"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      style="visibility: hidden"
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+
+    <noscript>
+      <picture class="absolute inset-0 block h-full w-full">
+        <source
+          media="(prefers-color-scheme: dark)"
+          srcset={`${dark800} 800w, ${dark1000} 1000w, ${dark1400} 1400w`}
+          sizes={sizes}
+          type="image/webp"
+        />
+        <img
+          src={light800}
+          srcset={`${light800} 800w, ${light1000} 1000w, ${light1400} 1400w`}
+          sizes={sizes}
+          width="1672"
+          height="941"
+          alt="Illustrative isometric diagram of a central solar receiver tower surrounded by heliostats"
+          class="h-full w-full object-cover"
+        />
+      </picture>
+    </noscript>
+  </div>
+</figure>
+
+<script is:inline>
+  (() => {
+    const image = document.getElementById("hero-visual");
+    if (!(image instanceof HTMLImageElement)) return;
+
+    const root = document.documentElement;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const sizes = "(min-width: 1024px) 860px, (min-width: 640px) 704px, 100vw";
+
+    const resolveTheme = () => {
+      const mode = root.dataset.themeMode;
+      return mode === "dark" || (mode !== "light" && media.matches)
+        ? "dark"
+        : "light";
+    };
+
+    const sync = () => {
+      const theme = resolveTheme();
+      if (image.dataset.theme === theme) return;
+
+      image.dataset.theme = theme;
+      image.sizes = sizes;
+      image.style.visibility = "visible";
+
+      if (theme === "dark") {
+        image.srcset = image.dataset.darkSrcset;
+        image.src = image.dataset.darkSrc;
+      } else {
+        image.srcset = image.dataset.lightSrcset;
+        image.src = image.dataset.lightSrc;
+      }
+    };
+
+    sync();
+    new MutationObserver(sync).observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme", "data-theme-mode"],
+    });
+    media.addEventListener("change", sync);
+  })();
+</script>

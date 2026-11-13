@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DownloadStatus from "../components/DownloadStatus.astro";
+import InstallInstructions from "../components/InstallInstructions.astro";
+import SystemRequirements from "../components/SystemRequirements.astro";
+import { getReleaseInfo } from "../lib/releases";
+
+const release = await getReleaseInfo();
+
+const description =
+  "Download CoPylot-Accelerated packages for Linux, Windows and macOS, including Linux CUDA.";
+---
+
+<BaseLayout
+  title="Downloads"
+  description={description}
+  path="/downloads/"
+  active="downloads"
+>
+  <section class="border-b border-line">
+    <div class="site-container py-16 text-center md:py-20 lg:py-24">
+      <p class="eyebrow">Downloads</p>
+      <h1
+        class="mt-4 text-[clamp(2.8rem,6vw,4.7rem)] leading-[0.98] tracking-[-0.05em]"
+      >
+        Downloads
+      </h1>
+      <p
+        class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted sm:text-base"
+      >
+        Prebuilt packages for Linux, Windows and macOS. Install from a release
+        archive; build from source separately.
+      </p>
+    </div>
+  </section>
+
+  <DownloadStatus release={release} />
+  <SystemRequirements />
+  <InstallInstructions />
+</BaseLayout>

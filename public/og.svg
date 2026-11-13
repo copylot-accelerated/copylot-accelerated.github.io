@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<title>CoPylot-Accelerated — accelerated heliostat-field optics</title>
+<desc>Editorial social card with the CoPylot-Accelerated wordmark and an illustrative optical field.</desc>
+<defs>
+  <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.7" fill="#202020"/></pattern>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#e8a06a" stop-opacity="0.4"/><stop offset="100%" stop-color="#e8a06a" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="630" fill="#fbfaf7"/>
+<g transform="translate(64 64)">
+  <circle cx="14" cy="14" r="10" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="51 11.8"/>
+  <path d="M28 0 20 8" stroke="#a34a1f" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="14" cy="14" r="2.9" fill="#a34a1f"/>
+</g>
+<text x="106" y="86" font-family="Inter, sans-serif" font-size="20" font-weight="600" letter-spacing="-0.4" fill="#111111">CoPylot<tspan fill="#6c6964" font-weight="400">-Accelerated</tspan></text>
+<path d="M64 128h1072" stroke="#e6e3dd"/>
+<text x="64" y="198" font-family="Inter, sans-serif" font-size="12" font-weight="500" letter-spacing="2.2" fill="#a34a1f">ACCELERATED OPTICAL SIMULATION</text>
+<text x="62" y="286" font-family="Inter, sans-serif" font-size="58" font-weight="600" letter-spacing="-2.6" fill="#111111">Heliostat-field optics,</text>
+<text x="62" y="348" font-family="Inter, sans-serif" font-size="58" font-weight="600" letter-spacing="-2.6" fill="#111111">accelerated.</text>
+<text x="64" y="410" font-family="Inter, sans-serif" font-size="20" font-weight="400" fill="#6c6964">A faster execution layer for the</text>
+<text x="64" y="438" font-family="Inter, sans-serif" font-size="20" font-weight="400" fill="#6c6964">SolarPILOT/CoPylot optical model.</text>
+<text x="64" y="536" font-family="Inter, sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#111111">PYTHON API</text>
+<text x="170" y="536" font-family="Inter, sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#6c6964">·</text>
+<text x="188" y="536" font-family="Inter, sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#111111">CPU</text>
+<text x="238" y="536" font-family="Inter, sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#6c6964">·</text>
+<text x="256" y="536" font-family="Inter, sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#111111">MULTICORE</text>
+<text x="356" y="536" font-family="Inter, sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#6c6964">·</text>
+<text x="374" y="536" font-family="Inter, sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#111111">CUDA</text>
+<rect x="760" y="64" width="376" height="502" rx="8" fill="#090909" stroke="#242424"/>
+<rect x="761" y="65" width="374" height="500" rx="7" fill="url(#dots)" opacity="0.7"/>
+<text x="784" y="98" font-family="Inter, sans-serif" font-size="9" font-weight="500" letter-spacing="1.8" fill="#6a6a6a">ILLUSTRATIVE OPTICAL FIELD</text>
+<ellipse cx="948" cy="352" rx="152" ry="56" fill="none" stroke="#2b2b2b" stroke-dasharray="4 8"/>
+<ellipse cx="948" cy="352" rx="96" ry="35" fill="none" stroke="#202020"/>
+<g><line x1="1036.40" y1="363.04" x2="1047.77" y2="354.87" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1006.48" y1="380.57" x2="1019.33" y2="375.00" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="950.95" y1="387.32" x2="966.92" y2="386.22" stroke="#d27a45" stroke-width="3.2" stroke-linecap="round"/><line x1="894.09" y1="380.43" x2="907.48" y2="384.52" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="854.75" y1="362.80" x2="866.59" y2="370.27" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="848.46" y1="340.66" x2="859.37" y2="349.43" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="877.25" y1="322.35" x2="888.93" y2="330.07" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="930.12" y1="316.38" x2="944.01" y2="318.08" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="988.96" y1="324.68" x2="1001.46" y2="318.37" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1029.86" y1="341.83" x2="1040.80" y2="333.10" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1085.83" y1="376.14" x2="1095.74" y2="366.26" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1054.21" y1="393.85" x2="1065.73" y2="385.89" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1005.54" y1="405.19" x2="1018.68" y2="400.36" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="947.49" y1="408.20" x2="961.48" y2="407.70" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="889.17" y1="402.62" x2="902.59" y2="406.59" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="838.41" y1="389.03" x2="852.00" y2="397.48" stroke="#d27a45" stroke-width="3.2" stroke-linecap="round"/><line x1="805.06" y1="370.84" x2="815.30" y2="380.40" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="791.66" y1="349.01" x2="800.62" y2="359.77" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="801.07" y1="327.15" x2="809.36" y2="338.44" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="831.76" y1="308.58" x2="840.30" y2="319.68" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="878.62" y1="296.61" x2="889.16" y2="305.84" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="933.55" y1="295.29" x2="949.48" y2="296.81" stroke="#d27a45" stroke-width="3.2" stroke-linecap="round"/><line x1="994.47" y1="303.52" x2="1005.77" y2="295.27" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1046.40" y1="316.20" x2="1055.18" y2="305.30" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1081.70" y1="334.04" x2="1089.94" y2="322.72" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/><line x1="1095.49" y1="355.07" x2="1104.24" y2="344.15" stroke="#4b4b4b" stroke-width="2.6" stroke-linecap="round"/></g>
+<g transform="translate(820 150)" fill="none" stroke="#8f8f8f" stroke-width="1.1" opacity="0.8"><circle r="5"/><path d="M0-10v2M0 8v2M-10 0h2M8 0h2M-7-7l1.5 1.5M5.5 5.5 7 7M7-7 5.5-5.5M-5.5 5.5-7 7"/></g>
+<text x="820" y="171" font-family="Inter, sans-serif" font-size="8" letter-spacing="1.4" fill="#6a6a6a" text-anchor="middle">SUN</text>
+<line x1="820" y1="150" x2="958.94" y2="386.77" stroke="#c76d3b" stroke-width="0.9" stroke-dasharray="3 5" opacity="0.38"/>
+<line x1="958.94" y1="386.77" x2="948" y2="228" stroke="#d27a45" stroke-width="1.1" opacity="0.85"/>
+<line x1="820" y1="150" x2="845.21" y2="393.25" stroke="#c76d3b" stroke-width="0.9" stroke-dasharray="3 5" opacity="0.38"/>
+<line x1="845.21" y1="393.25" x2="948" y2="228" stroke="#d27a45" stroke-width="1.1" opacity="0.85"/>
+<line x1="820" y1="150" x2="941.51" y2="296.05" stroke="#c76d3b" stroke-width="0.9" stroke-dasharray="3 5" opacity="0.38"/>
+<line x1="941.51" y1="296.05" x2="948" y2="228" stroke="#d27a45" stroke-width="1.1" opacity="0.85"/>
+<circle cx="948" cy="228" r="64" fill="url(#glow)"/>
+<ellipse cx="948" cy="352" rx="15" ry="5" fill="none" stroke="#3f3f3f"/>
+<polygon points="943,352 946,242 950,242 953,352" fill="#242424" stroke="#4a4a4a" stroke-width="0.9"/>
+<line x1="934" y1="244" x2="962" y2="244" stroke="#666" stroke-width="1"/>
+<rect x="942" y="216" width="12" height="28" fill="#0c0c0c" stroke="#8a8a8a" stroke-width="1"/>
+<line x1="948" y1="221" x2="948" y2="238" stroke="#e8a06a" stroke-width="1.6"/>
+<circle cx="948" cy="228" r="1.8" fill="#f2c29d"/>
+<text x="1112" y="542" font-family="Inter, sans-serif" font-size="8" letter-spacing="1.4" fill="#5f5f5f" text-anchor="end">SCHEMATIC · NOT A SIMULATION RESULT</text>
+</svg>

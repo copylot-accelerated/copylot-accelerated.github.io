@@ -1,0 +1,213 @@
+---
+import Icon from "./Icon.astro";
+import LogoMark from "./LogoMark.astro";
+import { SITE, withBase } from "../config/site";
+
+interface Props {
+  active?: "home" | "downloads" | "docs";
+}
+
+const { active = "home" } = Astro.props;
+
+const navigation = [
+  { key: "downloads", label: "Downloads", href: withBase("/downloads/") },
+  { key: "docs", label: "Documentation", href: withBase("/docs/") },
+] as const;
+
+const themes = [
+  { choice: "system", label: "System", icon: "monitor" },
+  { choice: "light", label: "Light", icon: "sun" },
+  { choice: "dark", label: "Dark", icon: "moon" },
+] as const;
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-paper">
+  <div class="site-container flex h-16 items-center justify-between gap-4">
+    <a
+      href={withBase("/")}
+      class="flex shrink-0 items-center gap-2.5"
+      aria-label={`${SITE.name} home`}
+    >
+      <LogoMark size={24} class="text-ink" />
+      <span class="text-[16px] tracking-[-0.02em]">
+        <span class="font-semibold">CoPylot</span><span class="font-normal text-muted"
+          >-Accelerated</span
+        >
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+      {
+        navigation.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              "text-sm transition-colors",
+              active === item.key
+                ? "text-ink"
+                : "text-muted hover:text-ink",
+            ]}
+            aria-current={active === item.key ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <details class="theme-menu" data-theme-menu>
+        <summary aria-label="Color theme: System" title="Color theme">
+          <span data-theme-summary="system">
+            <Icon name="monitor" size={16} />
+          </span>
+          <span data-theme-summary="light">
+            <Icon name="sun" size={16} />
+          </span>
+          <span data-theme-summary="dark">
+            <Icon name="moon" size={16} />
+          </span>
+        </summary>
+        <div class="theme-menu-panel" role="group" aria-label="Color theme">
+          {
+            themes.map((theme) => (
+              <button
+                type="button"
+                class="theme-menu-item"
+                data-theme-option={theme.choice}
+                aria-pressed={theme.choice === "system" ? "true" : "false"}
+              >
+                <Icon name={theme.icon} size={15} />
+                <span>{theme.label}</span>
+                <span data-theme-check>
+                  <Icon name="check" size={14} />
+                </span>
+              </button>
+            ))
+          }
+        </div>
+      </details>
+
+      <a
+        href={SITE.repository.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-secondary hidden px-3.5 py-2 text-[13px] md:inline-flex"
+      >
+        <Icon name="github" size={15} />
+        GitHub
+        <span class="sr-only">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="border-b border-line bg-paper md:hidden">
+  <nav
+    class="site-container flex h-11 items-center gap-6"
+    aria-label="Primary mobile"
+  >
+    {
+      navigation.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            "text-[13px] transition-colors",
+            active === item.key
+              ? "text-ink"
+              : "text-muted hover:text-ink",
+          ]}
+          aria-current={active === item.key ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))
+    }
+    <a
+      href={SITE.repository.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="ml-auto inline-flex items-center gap-1 text-[13px] text-muted transition-colors hover:text-ink"
+    >
+      GitHub
+      <Icon name="arrow-up-right" size={12} />
+      <span class="sr-only">(opens in a new tab)</span>
+    </a>
+  </nav>
+</div>
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const menu = document.querySelector("[data-theme-menu]");
+    const summary = menu?.querySelector("summary");
+    const options = [...document.querySelectorAll("[data-theme-option]")];
+    const labels = { system: "System", light: "Light", dark: "Dark" };
+
+    const currentMode = () => {
+      const value = root.dataset.themeMode;
+      return value === "light" || value === "dark" ? value : "system";
+    };
+
+    const sync = () => {
+      const mode = currentMode();
+      for (const option of options) {
+        option.setAttribute(
+          "aria-pressed",
+          String(option.dataset.themeOption === mode),
+        );
+      }
+      summary?.setAttribute("aria-label", `Color theme: ${labels[mode]}`);
+    };
+
+    for (const option of options) {
+      option.addEventListener("click", () => {
+        const choice = option.dataset.themeOption;
+        if (choice !== "light" && choice !== "dark" && choice !== "system") {
+          return;
+        }
+
+        root.dataset.themeMode = choice;
+        if (choice === "system") {
+          delete root.dataset.theme;
+        } else {
+          root.dataset.theme = choice;
+        }
+
+        try {
+          localStorage.setItem("site-theme", choice);
+        } catch {
+          /* The explicit choice still applies for this page. */
+        }
+
+        sync();
+        if (menu instanceof HTMLDetailsElement) menu.open = false;
+        summary?.focus();
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      if (
+        menu instanceof HTMLDetailsElement &&
+        menu.open &&
+        event.target instanceof Node &&
+        !menu.contains(event.target)
+      ) {
+        menu.open = false;
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        menu instanceof HTMLDetailsElement &&
+        menu.open
+      ) {
+        menu.open = false;
+        summary?.focus();
+      }
+    });
+
+    sync();
+  })();
+</script>

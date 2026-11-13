@@ -1,0 +1,33 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+}
+
+const { title, description, href } = Astro.props;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group block border-t border-line py-4 transition-colors hover:border-accent"
+>
+  <span
+    class="flex items-start gap-2 text-[15px] font-medium tracking-[-0.01em] text-ink transition-colors group-hover:text-accent"
+  >
+    {title}
+    <Icon
+      name="arrow-up-right"
+      size={13}
+      class="mt-0.5 shrink-0 text-muted transition-colors group-hover:text-accent"
+    />
+  </span>
+  <span class="mt-1 block text-[13px] leading-relaxed text-muted">
+    {description}
+  </span>
+  <span class="sr-only">(opens in a new tab)</span>
+</a>

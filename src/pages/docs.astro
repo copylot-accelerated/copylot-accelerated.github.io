@@ -1,0 +1,205 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DocLink from "../components/DocLink.astro";
+import { SITE } from "../config/site";
+
+const groups = [
+  {
+    id: "start",
+    title: "Start here",
+    links: [
+      {
+        title: "Overview and quick start",
+        description: "Project overview, execution modes and quick start.",
+        href: SITE.docs.readme,
+      },
+      {
+        title: "Installation and packaging",
+        description: "Archive layout, prerequisites and package validation.",
+        href: SITE.docs.packaging,
+      },
+      {
+        title: "Examples",
+        description: "The packaged synthetic example and source-tree simulation.",
+        href: SITE.docs.examples,
+      },
+    ],
+  },
+  {
+    id: "execution",
+    title: "Execution backends",
+    links: [
+      {
+        title: "CPU and CUDA selection",
+        description: "Backend selection and supported CUDA configurations.",
+        href: SITE.docs.backend,
+      },
+      {
+        title: "Multicore CPU design",
+        description: "Parallel work within and across states.",
+        href: SITE.docs.multicore,
+      },
+      {
+        title: "CUDA validation",
+        description: "The flat-receiver numerical comparison.",
+        href: SITE.docs.cudaValidation,
+      },
+    ],
+  },
+  {
+    id: "build",
+    title: "Build and platforms",
+    links: [
+      {
+        title: "Building from source",
+        description: "Toolchains, dependency reconstruction and tests.",
+        href: SITE.docs.build,
+      },
+      {
+        title: "Dependencies",
+        description: "Pinned upstream components and native dependencies.",
+        href: SITE.docs.dependencies,
+      },
+      {
+        title: "Platform status",
+        description: "Build status by operating system and CUDA targets.",
+        href: SITE.docs.platformStatus,
+      },
+    ],
+  },
+  {
+    id: "evidence",
+    title: "Performance and reproducibility",
+    links: [
+      {
+        title: "Benchmark evidence",
+        description: "Archived measurements, provenance and timing boundaries.",
+        href: SITE.docs.benchmarkEvidence,
+      },
+      {
+        title: "Public reproducibility",
+        description: "Validate a build or run new measurements.",
+        href: SITE.docs.reproducibility,
+      },
+      {
+        title: "Annual benchmark matrix",
+        description: "Eight complete annual campaigns across two cases.",
+        href: SITE.docs.annualMatrix,
+      },
+    ],
+  },
+  {
+    id: "project",
+    title: "Project and licensing",
+    links: [
+      {
+        title: "Citation and acknowledgements",
+        description: "How to cite the software and the SolarPILOT paper.",
+        href: SITE.docs.citation,
+      },
+      {
+        title: "Project license",
+        description: "MIT terms for eligible original project code.",
+        href: SITE.docs.license,
+      },
+      {
+        title: "Third-party notices",
+        description: "Upstream terms and binary distribution conditions.",
+        href: SITE.docs.notices,
+      },
+    ],
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Documentation"
+  description="Guides, benchmarks and licensing for CoPylot-Accelerated and the SolarPILOT/CoPylot optical stack."
+  path="/docs/"
+  active="docs"
+>
+  <section class="border-b border-line">
+    <div class="site-container py-16 text-center md:py-20 lg:py-24">
+      <p class="eyebrow">Documentation</p>
+      <h1
+        class="mt-4 text-[clamp(2.8rem,6vw,4.7rem)] leading-[0.98] tracking-[-0.05em]"
+      >
+        Documentation
+      </h1>
+      <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
+        Guides, benchmark evidence and licensing.
+      </p>
+    </div>
+  </section>
+
+  <section class="site-container py-16 md:py-20">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-12">
+      <aside class="hidden lg:col-span-3 lg:block">
+        <nav class="sticky top-24" aria-label="Documentation sections">
+          <p class="eyebrow">Contents</p>
+          <ul class="mt-4 space-y-3 border-l border-line pl-4">
+            {
+              groups.map((group) => (
+                <li>
+                  <a
+                    href={`#${group.id}`}
+                    class="text-sm text-muted transition-colors hover:text-ink"
+                  >
+                    {group.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </aside>
+
+      <div class="lg:col-span-9">
+        <nav
+          class="mb-10 flex flex-wrap gap-x-5 gap-y-2 border-y border-line py-3 text-xs lg:hidden"
+          aria-label="Documentation sections"
+        >
+          {
+            groups.map((group) => (
+              <a class="link-underline" href={`#${group.id}`}>
+                {group.title}
+              </a>
+            ))
+          }
+        </nav>
+
+        <div class="space-y-14">
+          {
+            groups.map((group) => (
+              <section id={group.id}>
+                <h2 class="pb-4 text-2xl font-medium tracking-[-0.035em]">
+                  {group.title}
+                </h2>
+                <div class="mt-2">
+                  {group.links.map((link) => (
+                    <DocLink {...link} />
+                  ))}
+                </div>
+              </section>
+            ))
+          }
+        </div>
+
+        <div class="mt-14 border-t border-line pt-6">
+          <p class="eyebrow">Citation</p>
+          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
+            Cite Javier Bonilla, the software name and the exact release tag or
+            Git commit used. For the underlying optical software, cite M. J.
+            Wagner and T. Wendelin (2018).
+          </p>
+          <a
+            class="link-underline mt-4 inline-block text-sm"
+            href={SITE.upstream.paper}
+            target="_blank"
+            rel="noopener noreferrer">SolarPILOT paper · DOI ↗</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

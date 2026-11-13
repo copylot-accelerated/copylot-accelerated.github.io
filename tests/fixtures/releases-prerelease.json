@@ -1,0 +1,35 @@
+[
+  {
+    "id": 9102,
+    "tag_name": "v9.9.9",
+    "name": "Draft release that must never be shown",
+    "html_url": "https://github.com/JaviBonilla/CoPylot-Accelerated/releases/tag/v9.9.9",
+    "published_at": "2026-12-01T12:00:00Z",
+    "draft": true,
+    "prerelease": false,
+    "assets": []
+  },
+  {
+    "id": 9101,
+    "tag_name": "v0.2.0-rc1",
+    "name": "CoPylot-Accelerated v0.2.0-rc1",
+    "html_url": "https://github.com/JaviBonilla/CoPylot-Accelerated/releases/tag/v0.2.0-rc1",
+    "published_at": "2026-11-20T12:00:00Z",
+    "draft": false,
+    "prerelease": true,
+    "assets": [
+      {
+        "name": "copylot-accelerated-v0.2.0-rc1-linux-x86_64-cpu.tar.gz",
+        "size": 1572864,
+        "browser_download_url": "https://github.com/JaviBonilla/CoPylot-Accelerated/releases/download/v0.2.0-rc1/copylot-accelerated-v0.2.0-rc1-linux-x86_64-cpu.tar.gz",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "size": 512,
+        "browser_download_url": "https://github.com/JaviBonilla/CoPylot-Accelerated/releases/download/v0.2.0-rc1/SHA256SUMS.txt",
+        "digest": null
+      }
+    ]
+  }
+]

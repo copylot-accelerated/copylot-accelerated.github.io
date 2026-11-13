@@ -1,0 +1,82 @@
+---
+import Icon from "./Icon.astro";
+import { formatBytes, type PackageDownload } from "../lib/releases";
+
+interface Props {
+  entry: PackageDownload;
+  checksumUrl: string | null;
+}
+
+const { entry, checksumUrl } = Astro.props;
+const { spec, asset } = entry;
+---
+
+<article class="grid gap-5 py-6 md:grid-cols-12 md:items-start md:gap-6">
+  <div class="border-l-2 border-accent pl-4 md:col-span-3">
+    <h3 class="text-[17px] font-semibold tracking-[-0.02em] text-ink">
+      {spec.platform}
+      <span class="font-normal text-muted">{spec.architecture}</span>
+    </h3>
+    <span
+      class:list={["badge mt-2", spec.backend === "CUDA" && "badge-accent"]}
+    >
+      {spec.backend}
+    </span>
+  </div>
+
+  <div class="min-w-0 md:col-span-5">
+    {
+      asset ? (
+        <>
+          <p class="break-all font-mono text-[11px] leading-relaxed text-ink-soft">
+            {asset.name}
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted">
+            <span>{formatBytes(asset.sizeBytes)}</span>
+            {asset.sha256 ? (
+              <details>
+                <summary class="cursor-pointer list-none font-mono text-[10px] uppercase tracking-[0.08em] text-muted transition-colors hover:text-ink">
+                  SHA-256
+                </summary>
+                <code class="mt-1 block break-all text-[10px] leading-relaxed text-ink-soft">
+                  {asset.sha256}
+                </code>
+              </details>
+            ) : checksumUrl ? (
+              <a
+                class="link-underline font-mono text-[10px] uppercase tracking-[0.08em]"
+                href={checksumUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                SHA256SUMS.txt
+                <span class="sr-only"> (opens in a new tab)</span>
+              </a>
+            ) : (
+              <span>Not published</span>
+            )}
+          </div>
+        </>
+      ) : (
+        <p class="text-sm text-muted">Not included in this release.</p>
+      )
+    }
+  </div>
+
+  <div class="flex items-center md:col-span-4 md:justify-end">
+    {
+      asset ? (
+        <a
+          href={asset.downloadUrl}
+          class="btn btn-secondary w-full md:w-auto"
+          aria-label={`Download the ${spec.platform} ${spec.architecture} ${spec.backend} package`}
+        >
+          <Icon name="download" size={15} />
+          Download
+        </a>
+      ) : (
+        <span class="text-xs text-muted">Unavailable</span>
+      )
+    }
+  </div>
+</article>
