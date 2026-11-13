@@ -7,12 +7,13 @@ const light1400 = withBase("/hero-optical-field-light-1400.webp");
 const dark800 = withBase("/hero-optical-field-dark-800.webp");
 const dark1000 = withBase("/hero-optical-field-dark-1000.webp");
 const dark1400 = withBase("/hero-optical-field-dark-1400.webp");
-const sizes = "(min-width: 1024px) 860px, (min-width: 640px) 704px, 100vw";
+const sizes =
+  "(min-width: 1024px) 960px, (min-width: 640px) calc(100vw - 64px), calc(100vw - 40px)";
 const placeholder =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 ---
 
-<figure class="mx-auto mt-10 max-w-[860px] sm:mt-14">
+<figure class="mx-auto mt-10 max-w-[960px] sm:mt-14">
   <div
     class="relative mx-auto aspect-[16/9] w-full overflow-hidden"
     role="img"
@@ -66,7 +67,8 @@ const placeholder =
 
     const root = document.documentElement;
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const sizes = "(min-width: 1024px) 860px, (min-width: 640px) 704px, 100vw";
+    const sizes =
+      "(min-width: 1024px) 960px, (min-width: 640px) calc(100vw - 64px), calc(100vw - 40px)";
 
     const resolveTheme = () => {
       const mode = root.dataset.themeMode;

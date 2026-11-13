@@ -238,6 +238,10 @@ The organization root site serves `robots.txt` at `/robots.txt`, the sitemap at
 authoritative pre-launch control; `robots.txt` also disallows all crawlers until
 launch.
 
+Google Search Console verification files live in `public/` and are copied to
+the site root. The build checker skips them because they contain only a
+verification token, not page metadata.
+
 At launch, set the repository variable `SITE_INDEXABLE=true` (Settings →
 Secrets and variables → Actions → Variables), then run the deployment. This
 switches the meta robots directive, robots.txt and sitemap advertisement. The
@@ -268,29 +272,31 @@ the scientific documentation.
 
 ## Hero illustration
 
-The hero uses two supplied 16:9 transparent renders:
+The hero uses two supplied 4:3 renders, each with its own background matched to
+the site theme:
 
-- Light: dark callouts, suitable for the paper background.
-- Dark: a separate dark rendering with light callouts. Its sun core and halo are
-  toned down to a warm gold so the white disc does not glare on the near-black
-  background.
+- Light: dark callouts on the paper background (`#FBFaf7`).
+- Dark: light callouts on the near-black background (`#0B0B0B`).
+
+Both are centred in a 16:9 frame with background-matched side bands, preserving
+the full composition without cropping the sun or the heliostat field.
 
 Both sets include 800 px, 1000 px and 1400 px WebP variants.
 `HeroVisual.astro` loads only the image for the active theme and swaps it when
-the user changes theme or the system preference changes. Chromatic cutout
-fringing was neutralised; the warm orange palette was kept.
+the user changes theme or the system preference changes. The warm orange palette
+is shared by both.
 
 The image is presented without a visible caption; its accessible name
 describes it as illustrative. The source PNGs are not duplicated in the
-repository. The light WebP assets are about 145 KB, 210 KB and 361 KB; the dark
-assets are about 139 KB, 197 KB and 330 KB.
+repository. The light WebP assets are about 32 KB, 44 KB and 70 KB; the dark
+assets are about 31 KB, 42 KB and 65 KB.
 
 ## Social card
 
 `public/og.png` is the rendered 1200 × 630 Open Graph image. Its editable source
 is `public/og.svg`. The card mirrors the current homepage: wordmark, eyebrow,
 headline, current subtitle, domain and the light isometric hero illustration.
-The SVG embeds a 500 × 281 quantized PNG of the illustration because Inkscape
+The SVG embeds a 500 × 375 quantized PNG of the illustration because Inkscape
 does not decode WebP. Regenerate the card after changing the homepage copy or
 hero:
 
