@@ -109,7 +109,12 @@ if (!(await exists(distDir))) {
 }
 
 const allFiles = await walk(distDir);
-const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
+const isSearchConsoleVerification = (file) =>
+  path.dirname(file) === distDir &&
+  /^google[a-z0-9]+\.html$/i.test(path.basename(file));
+const htmlFiles = allFiles.filter(
+  (file) => file.endsWith(".html") && !isSearchConsoleVerification(file),
+);
 
 if (htmlFiles.length === 0) {
   error("No HTML files found in the build output.");
