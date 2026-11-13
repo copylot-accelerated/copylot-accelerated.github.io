@@ -193,6 +193,9 @@ After publication is approved:
 2. Under **Build and deployment**, choose **Source: GitHub Actions**.
 3. Run the `Deploy website` workflow manually, or push to `main`.
 
+Pages must use **Source: GitHub Actions**. The repository root does not contain a
+built site, so a legacy branch build cannot serve the Astro output.
+
 The workflow installs with `npm ci`, runs `npm run verify`, executes both
 release-fixture tests, uploads the build with `actions/upload-pages-artifact`
 and deploys with `actions/deploy-pages`. It does not create a `gh-pages` branch.
@@ -237,7 +240,8 @@ launch.
 At launch, set the repository variable `SITE_INDEXABLE=true` (Settings →
 Secrets and variables → Actions → Variables), then run the deployment. This
 switches the meta robots directive, robots.txt and sitemap advertisement. The
-workflow passes the variable to the build as an environment variable.
+workflow passes the variable to the build as an environment variable. If the
+variable is absent, it passes `false` and the deployment remains `noindex`.
 
 ## Updating content
 
@@ -283,7 +287,11 @@ assets are about 139 KB, 197 KB and 330 KB.
 ## Social card
 
 `public/og.png` is the rendered 1200 × 630 Open Graph image. Its editable source
-is `public/og.svg`. Regenerate it with Inkscape if the design changes:
+is `public/og.svg`. The card mirrors the current homepage: wordmark, eyebrow,
+headline, current subtitle, domain and the light isometric hero illustration.
+The SVG embeds a 500 × 281 quantized PNG of the illustration because Inkscape
+does not decode WebP. Regenerate the card after changing the homepage copy or
+hero:
 
 ```sh
 inkscape public/og.svg \
@@ -293,10 +301,9 @@ inkscape public/og.svg \
   --export-height=630
 ```
 
-The card contains an illustrative field schematic and is labelled as such. It
-is not a simulation result. The SVG source uses Inter; Inkscape falls back to an
-available sans font if Inter is not installed, so check the rendered PNG after
-regenerating it.
+The illustration is decorative and is not a simulation result. The SVG source
+uses Inter; Inkscape falls back to an available sans font if Inter is not
+installed, so check the rendered PNG after regenerating it.
 
 ## Verification and deployment
 

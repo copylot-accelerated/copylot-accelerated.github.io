@@ -41,7 +41,7 @@ const schema = {
   "@type": "SoftwareSourceCode",
   name: SITE.name,
   description: SITE.description,
-  url: SITE.url,
+  url: absoluteUrl("/"),
   codeRepository: SITE.repository.url,
   license: SITE.docs.license,
   programmingLanguage: ["Python", "C++", "CUDA"],
@@ -49,6 +49,8 @@ const schema = {
     "@type": "Person",
     name: SITE.author,
   },
+  disambiguatingDescription:
+    "Independent project. The MIT license applies to eligible original project code; upstream SolarPILOT, CoPylot and other components retain their own licenses.",
 };
 ---
 

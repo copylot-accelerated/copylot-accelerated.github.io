@@ -141,7 +141,23 @@ for (const file of htmlFiles) {
   }
 
   const robots = html.match(/<meta name="robots" content="([^"]+)">/)?.[1];
-  if (!SITE.indexable && !robots?.includes("noindex")) {
+  const is404 = path.basename(file) === "404.html";
+
+  if (is404) {
+    if (!robots?.includes("noindex")) {
+      error(`${relative}: the 404 page must remain noindex.`);
+    }
+  } else if (SITE.indexable) {
+    if (
+      !robots?.includes("index") ||
+      robots.includes("noindex") ||
+      robots.includes("nofollow")
+    ) {
+      error(
+        `${relative}: expected index, follow metadata while indexing is enabled.`,
+      );
+    }
+  } else if (!robots?.includes("noindex")) {
     error(`${relative}: expected noindex while the public launch is unapproved.`);
   }
 
@@ -216,11 +232,28 @@ if (SITE.indexable) {
   if (!robots.includes("Allow: /")) {
     error("robots.txt should allow indexing when SITE_INDEXABLE=true.");
   }
+  if (robots.includes("Disallow: /")) {
+    error("robots.txt should not disallow crawling when SITE_INDEXABLE=true.");
+  }
+  if (!robots.includes(`Sitemap: ${SITE.url}/sitemap.xml`)) {
+    error("robots.txt should reference the sitemap when SITE_INDEXABLE=true.");
+  }
 } else if (!robots.includes("Disallow: /")) {
   error("robots.txt should disallow indexing before launch approval.");
 }
 
 const sitemap = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
+const sitemapLocations = [
+  ...sitemap.matchAll(/<loc>(.*?)<\/loc>/g),
+].map((match) => match[1]);
+
+if (sitemapLocations.length !== 3) {
+  error(`sitemap.xml: expected 3 canonical URLs, found ${sitemapLocations.length}.`);
+}
+if (sitemapLocations.some((location) => location.endsWith("/404/"))) {
+  error("sitemap.xml: the 404 page must not be listed.");
+}
+
 for (const route of ["/", "/downloads/", "/docs/"]) {
   const expected = `${SITE.url}${route === "/" ? "/" : route}`;
   if (!sitemap.includes(`<loc>${expected}</loc>`)) {
