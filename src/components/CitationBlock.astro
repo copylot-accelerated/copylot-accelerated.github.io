@@ -1,0 +1,355 @@
+---
+import Icon from "./Icon.astro";
+import { getCitationFormats } from "../data/citations";
+import { getReleaseInfo } from "../lib/releases";
+import { SITE } from "../config/site";
+
+const release = await getReleaseInfo();
+const version = release.selected?.tagName ?? SITE.releases.fallbackTag;
+const citationFormats = getCitationFormats(version);
+const defaultFormat = citationFormats[0];
+---
+
+<section id="citation" class="mt-14 scroll-mt-24 border-t border-line pt-6">
+  <p class="eyebrow">Citation</p>
+  <h2 class="mt-3 text-2xl font-medium tracking-[-0.035em]">
+    Citation and references
+  </h2>
+
+  <p class="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
+    If you use CoPylot-Accelerated, cite Javier Bonilla and the software name.
+    The software citation below uses the latest published GitHub release
+    resolved at build time. Cite the SolarPILOT and CoPylot papers for the
+    underlying optical model.
+  </p>
+
+  <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+    <a
+      class="link-underline"
+      href={SITE.upstream.paper}
+      target="_blank"
+      rel="noopener noreferrer">SolarPILOT paper · DOI ↗</a
+    >
+    <a
+      class="link-underline"
+      href={SITE.upstream.copylotPaper}
+      target="_blank"
+      rel="noopener noreferrer">CoPylot paper · DOI ↗</a
+    >
+  </div>
+
+  <div class="mt-6 border-y border-line py-4">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <label
+        for="citation-format"
+        class="text-xs font-medium uppercase tracking-[0.12em] text-ink"
+        >Citation format</label
+      >
+      <select
+        id="citation-format"
+        class="citation-select border border-line-strong bg-paper-raised px-3 py-2 text-xs text-ink"
+      >
+        {
+          citationFormats.map((format) => (
+            <option value={format.id}>{format.label}</option>
+          ))
+        }
+      </select>
+    </div>
+
+    <div class="mt-4 space-y-3">
+      {
+        defaultFormat.entries.map((entry) => (
+          <article
+            class="border border-line bg-paper-raised p-4 sm:p-5"
+            data-citation-entry={entry.id}
+          >
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-medium text-ink">{entry.label}</h3>
+                <p class="mt-0.5 text-[11px] text-muted">{entry.note}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="citation-action"
+                  data-citation-copy-tooltip
+                  data-tooltip="Copy citation"
+                >
+                  <button
+                    type="button"
+                    class="citation-icon-button"
+                    aria-label="Copy citation"
+                    data-citation-copy
+                  >
+                    <span class="citation-icon" data-copy-icon>
+                      <Icon name="copy" size={15} />
+                    </span>
+                    <span
+                      class="citation-icon is-hidden text-accent"
+                      data-check-icon
+                    >
+                      <Icon name="check" size={15} />
+                    </span>
+                  </button>
+                </span>
+                <span
+                  class="citation-action"
+                  data-citation-download-tooltip
+                  data-tooltip={`Download .${defaultFormat.extension}`}
+                >
+                  <a
+                    class="citation-icon-button"
+                    href={`data:${defaultFormat.mime};charset=utf-8,${encodeURIComponent(entry.text)}`}
+                    download={`${entry.slug}.${defaultFormat.extension}`}
+                    aria-label={`Download .${defaultFormat.extension} citation`}
+                    data-citation-download
+                  >
+                    <Icon name="download" size={15} />
+                    <span class="sr-only" data-citation-extension
+                      >{defaultFormat.extension}</span
+                    >
+                  </a>
+                </span>
+              </div>
+            </div>
+            <p class="mt-3 whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-ink-soft" data-citation-text>{entry.text}</p>
+            <span
+              class="sr-only"
+              data-citation-status
+              aria-live="polite"
+            ></span>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <p class="mt-4 max-w-2xl text-xs leading-relaxed text-muted">
+    A dedicated CoPylot-Accelerated publication will be added here when
+    available. Until then, cite the software using the version shown above.
+  </p>
+
+  <script
+    type="application/json"
+    id="citation-formats"
+    set:html={JSON.stringify(citationFormats)}
+  ></script>
+
+  <script is:inline>
+    (() => {
+      const data = document.getElementById("citation-formats");
+      const select = document.getElementById("citation-format");
+      const cards = [...document.querySelectorAll("[data-citation-entry]")];
+
+      if (!data || !select || cards.length === 0) return;
+
+      const formats = JSON.parse(data.textContent);
+      const currentFormat = () =>
+        formats.find((format) => format.id === select.value) ?? formats[0];
+
+      let pointerFocus = false;
+      document.addEventListener(
+        "pointerdown",
+        () => {
+          pointerFocus = true;
+        },
+        true,
+      );
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.key === "Tab") pointerFocus = false;
+        },
+        true,
+      );
+      select.addEventListener("focus", () => {
+        select.classList.toggle("is-keyboard-focus", !pointerFocus);
+      });
+      select.addEventListener("pointerdown", () => {
+        pointerFocus = true;
+        select.classList.remove("is-keyboard-focus");
+      });
+
+      const copyText = async (text) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+
+      const sync = () => {
+        const format = currentFormat();
+
+        for (const card of cards) {
+          const entry = format.entries.find(
+            (candidate) => candidate.id === card.dataset.citationEntry,
+          );
+          if (!entry) continue;
+
+          const text = card.querySelector("[data-citation-text]");
+          const download = card.querySelector("[data-citation-download]");
+          const downloadTooltip = card.querySelector(
+            "[data-citation-download-tooltip]",
+          );
+          const extension = card.querySelector("[data-citation-extension]");
+          const status = card.querySelector("[data-citation-status]");
+          const copy = card.querySelector("[data-citation-copy]");
+          const copyIcon = card.querySelector("[data-copy-icon]");
+          const checkIcon = card.querySelector("[data-check-icon]");
+          const copyTooltip = card.querySelector(
+            "[data-citation-copy-tooltip]",
+          );
+
+          if (text) text.textContent = entry.text;
+          if (download) {
+            download.href = `data:${format.mime};charset=utf-8,${encodeURIComponent(entry.text)}`;
+            download.download = `${entry.slug}.${format.extension}`;
+            download.setAttribute(
+              "aria-label",
+              `Download .${format.extension} citation`,
+            );
+          }
+          if (downloadTooltip) {
+            downloadTooltip.setAttribute(
+              "data-tooltip",
+              `Download .${format.extension}`,
+            );
+          }
+          if (extension) extension.textContent = format.extension;
+          if (copyIcon) copyIcon.classList.remove("is-hidden");
+          if (checkIcon) checkIcon.classList.add("is-hidden");
+          if (copy) {
+            copy.disabled = false;
+            copy.setAttribute("aria-label", "Copy citation");
+          }
+          if (copyTooltip) {
+            copyTooltip.setAttribute("data-tooltip", "Copy citation");
+          }
+          if (status) status.textContent = "";
+        }
+      };
+
+      for (const card of cards) {
+        const copy = card.querySelector("[data-citation-copy]");
+        const copyIcon = card.querySelector("[data-copy-icon]");
+        const checkIcon = card.querySelector("[data-check-icon]");
+        const copyTooltip = card.querySelector("[data-citation-copy-tooltip]");
+        const status = card.querySelector("[data-citation-status]");
+        if (!copy) continue;
+
+        copy.addEventListener("click", async () => {
+          const format = currentFormat();
+          const entry = format.entries.find(
+            (candidate) => candidate.id === card.dataset.citationEntry,
+          );
+          if (!entry) return;
+
+          const copied = await copyText(entry.text);
+          if (copied) {
+            if (copyIcon) copyIcon.classList.add("is-hidden");
+            if (checkIcon) checkIcon.classList.remove("is-hidden");
+            copy.disabled = true;
+            copy.setAttribute("aria-label", "Copied");
+            if (copyTooltip) {
+              copyTooltip.setAttribute("data-tooltip", "Copied");
+            }
+            if (status) status.textContent = "Copied to clipboard.";
+          } else {
+            if (copyTooltip) {
+              copyTooltip.setAttribute("data-tooltip", "Copy failed");
+            }
+            if (status) status.textContent = "Select the text to copy.";
+          }
+          window.setTimeout(() => {
+            if (copyIcon) copyIcon.classList.remove("is-hidden");
+            if (checkIcon) checkIcon.classList.add("is-hidden");
+            copy.disabled = false;
+            copy.setAttribute("aria-label", "Copy citation");
+            if (copyTooltip) {
+              copyTooltip.setAttribute("data-tooltip", "Copy citation");
+            }
+            if (status) status.textContent = "";
+          }, 1500);
+        });
+      }
+
+      select.addEventListener("change", sync);
+      sync();
+    })();
+  </script>
+</section>
+
+<style>
+  .citation-icon {
+    display: inline-flex;
+  }
+
+  .citation-icon.is-hidden {
+    display: none;
+  }
+
+  .citation-action {
+    display: inline-flex;
+    position: relative;
+  }
+
+  .citation-action::after {
+    background: var(--ink);
+    border-radius: 2px;
+    bottom: calc(100% + 8px);
+    color: var(--paper);
+    content: attr(data-tooltip);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    left: 50%;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    opacity: 0;
+    padding: 5px 7px;
+    pointer-events: none;
+    position: absolute;
+    transform: translateX(-50%);
+    transition: opacity 120ms ease;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+  .citation-action:hover::after,
+  .citation-action:focus-within::after {
+    opacity: 1;
+  }
+
+  .citation-icon-button {
+    align-items: center;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--muted);
+    display: inline-flex;
+    height: 2rem;
+    justify-content: center;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+    width: 2rem;
+  }
+
+  .citation-icon-button:hover {
+    background: var(--paper-sunken);
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .citation-select:focus:not(.is-keyboard-focus) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .citation-select.is-keyboard-focus:focus {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+</style>

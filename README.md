@@ -73,6 +73,7 @@ output.
 │   ├── components/                # Astro UI components
 │   ├── config/site.ts             # Site, repository, URL and package config
 │   ├── data/benchmarks.ts          # Archived benchmark values and formatting
+│   ├── data/citations.ts           # Software and paper citation formats
 │   ├── layouts/BaseLayout.astro   # Head, SEO, theme bootstrap, shell
 │   ├── lib/releases.ts            # Build-time GitHub Releases resolver
 │   ├── pages/
@@ -261,6 +262,9 @@ variable is absent, it passes `false` and the deployment remains `noindex`.
   `InstallInstructions.astro`.
 - **Documentation index**: `src/pages/docs.astro` and
   `src/components/DocLink.astro`.
+- **Citation formats and references**: `src/data/citations.ts` and
+  `src/components/CitationBlock.astro`. The software citation uses the latest
+  release resolved at build time, with `v0.1.0` as the API-failure fallback.
 - **Colors, type and base styles**: `src/styles/global.css`.
 - **Icons**: `src/components/Icon.astro` (Lucide-derived inline SVG paths).
 - **Benchmark values**: `src/data/benchmarks.ts`.

@@ -7,25 +7,61 @@ const groups = [
   {
     title: "Project",
     links: [
-      { label: "Releases", href: SITE.repository.releases },
-      { label: "Citation", href: SITE.docs.citation },
+      {
+        label: "Releases",
+        href: SITE.repository.releases,
+        external: true,
+      },
+      {
+        label: "Citation",
+        href: withBase("/docs/#citation"),
+        external: false,
+      },
     ],
   },
   {
     title: "Documentation",
     links: [
-      { label: "Installation", href: SITE.docs.installation },
-      { label: "Execution backends", href: SITE.docs.backend },
-      { label: "Benchmarks", href: SITE.docs.benchmarkEvidence },
+      {
+        label: "Installation",
+        href: SITE.docs.installation,
+        external: true,
+      },
+      {
+        label: "Execution backends",
+        href: SITE.docs.backend,
+        external: true,
+      },
+      {
+        label: "Benchmarks",
+        href: SITE.docs.benchmarkEvidence,
+        external: true,
+      },
     ],
   },
   {
     title: "Resources",
     links: [
-      { label: "Project license", href: SITE.docs.license },
-      { label: "Documentation license", href: SITE.docs.docsLicense },
-      { label: "Data license", href: SITE.docs.dataLicense },
-      { label: "Third-party notices", href: SITE.docs.notices },
+      {
+        label: "Project license",
+        href: SITE.docs.license,
+        external: true,
+      },
+      {
+        label: "Documentation license",
+        href: SITE.docs.docsLicense,
+        external: true,
+      },
+      {
+        label: "Data license",
+        href: SITE.docs.dataLicense,
+        external: true,
+      },
+      {
+        label: "Third-party notices",
+        href: SITE.docs.notices,
+        external: true,
+      },
     ],
   },
 ] as const;
@@ -72,16 +108,18 @@ const groups = [
                   <li>
                     <a
                       href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target={link.external ? "_blank" : undefined}
+                      rel={link.external ? "noopener noreferrer" : undefined}
                       class="inline-flex items-start gap-1 text-sm leading-snug text-ink-soft transition-colors hover:text-accent"
                     >
                       {link.label}
-                      <Icon
-                        name="arrow-up-right"
-                        size={11}
-                        class="mt-0.5 shrink-0 text-muted"
-                      />
+                      {link.external && (
+                        <Icon
+                          name="arrow-up-right"
+                          size={11}
+                          class="mt-0.5 shrink-0 text-muted"
+                        />
+                      )}
                     </a>
                   </li>
                 ))}

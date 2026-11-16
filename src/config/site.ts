@@ -57,11 +57,14 @@ export const SITE = {
   upstream: {
     solarPilot: "https://github.com/NatLabRockies/SolarPILOT",
     paper: "https://doi.org/10.1016/j.solener.2018.06.063",
+    copylotPaper: "https://doi.org/10.1115/1.4053973",
   },
   releases: {
     api: `https://api.github.com/repos/${repository.owner}/${repository.name}/releases`,
     perPage: 30,
     checksumAsset: "SHA256SUMS.txt",
+    /** Used only when the build-time release API is unavailable. */
+    fallbackTag: "v0.1.0",
   },
   packages: [
     {
@@ -124,7 +127,6 @@ export const SITE = {
     dataLicense: `${repository.url}/blob/main/benchmarks/results/LICENSE`,
     licensingInventory: `${repository.url}/blob/main/docs/licensing-inventory.json`,
     notices: `${repository.url}/blob/main/THIRD_PARTY_NOTICES`,
-    citation: `${repository.url}#citation`,
   },
 } as const;
 

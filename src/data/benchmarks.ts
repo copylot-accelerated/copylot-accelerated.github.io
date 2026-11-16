@@ -78,6 +78,10 @@ export function formatSpeedup(value: number): string {
   return `${value.toFixed(2)}×`;
 }
 
+export function formatSpeedupWhole(value: number): string {
+  return `${Math.round(value)}×`;
+}
+
 export function formatExactSeconds(seconds: number): string {
   return `${seconds.toFixed(6)} s`;
 }
