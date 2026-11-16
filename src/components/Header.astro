@@ -182,7 +182,7 @@ const themes = [
 
         sync();
         if (menu instanceof HTMLDetailsElement) menu.open = false;
-        summary?.focus();
+        summary?.focus({ preventScroll: true });
       });
     }
 
@@ -204,7 +204,7 @@ const themes = [
         menu.open
       ) {
         menu.open = false;
-        summary?.focus();
+        summary?.focus({ preventScroll: true });
       }
     });
 

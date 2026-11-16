@@ -18,9 +18,8 @@ const defaultFormat = citationFormats[0];
 
   <p class="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
     If you use CoPylot-Accelerated, cite Javier Bonilla and the software name.
-    The software citation below uses the latest published GitHub release
-    resolved at build time. Cite the SolarPILOT and CoPylot papers for the
-    underlying optical model.
+    The software citation below uses the latest published GitHub release. Cite
+    the SolarPILOT and CoPylot papers for the underlying optical model.
   </p>
 
   <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
@@ -40,21 +39,42 @@ const defaultFormat = citationFormats[0];
 
   <div class="mt-6 border-y border-line py-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <label
-        for="citation-format"
+      <span
         class="text-xs font-medium uppercase tracking-[0.12em] text-ink"
-        >Citation format</label
+        >Citation format</span
       >
-      <select
-        id="citation-format"
-        class="citation-select border border-line-strong bg-paper-raised px-3 py-2 text-xs text-ink"
-      >
-        {
-          citationFormats.map((format) => (
-            <option value={format.id}>{format.label}</option>
-          ))
-        }
-      </select>
+      <details class="citation-format-menu" data-citation-format-menu>
+        <summary
+          class="citation-format-trigger"
+          aria-label={`Citation format: ${defaultFormat.label}`}
+        >
+          <span data-citation-format-label>{defaultFormat.label}</span>
+          <Icon name="chevron-down" size={13} class="text-muted" />
+        </summary>
+        <div
+          class="citation-format-panel"
+          role="group"
+          aria-label="Citation format"
+        >
+          {
+            citationFormats.map((format) => (
+              <button
+                type="button"
+                class="citation-format-option"
+                data-citation-format-option={format.id}
+                aria-pressed={format.id === defaultFormat.id
+                  ? "true"
+                  : "false"}
+              >
+                <span>{format.label}</span>
+                <span class="citation-format-check">
+                  <Icon name="check" size={13} />
+                </span>
+              </button>
+            ))
+          }
+        </div>
+      </details>
     </div>
 
     <div class="mt-4 space-y-3">
@@ -138,37 +158,32 @@ const defaultFormat = citationFormats[0];
   <script is:inline>
     (() => {
       const data = document.getElementById("citation-formats");
-      const select = document.getElementById("citation-format");
+      const formatMenu = document.querySelector("[data-citation-format-menu]");
+      const formatSummary = formatMenu?.querySelector("summary");
+      const formatLabel = document.querySelector("[data-citation-format-label]");
+      const formatOptions = [
+        ...document.querySelectorAll("[data-citation-format-option]"),
+      ];
       const cards = [...document.querySelectorAll("[data-citation-entry]")];
 
-      if (!data || !select || cards.length === 0) return;
+      if (
+        !data ||
+        !formatMenu ||
+        !formatSummary ||
+        !formatLabel ||
+        formatOptions.length === 0 ||
+        cards.length === 0
+      ) {
+        return;
+      }
 
       const formats = JSON.parse(data.textContent);
+      let activeFormatId =
+        formatOptions.find(
+          (option) => option.getAttribute("aria-pressed") === "true",
+        )?.dataset.citationFormatOption ?? formats[0].id;
       const currentFormat = () =>
-        formats.find((format) => format.id === select.value) ?? formats[0];
-
-      let pointerFocus = false;
-      document.addEventListener(
-        "pointerdown",
-        () => {
-          pointerFocus = true;
-        },
-        true,
-      );
-      document.addEventListener(
-        "keydown",
-        (event) => {
-          if (event.key === "Tab") pointerFocus = false;
-        },
-        true,
-      );
-      select.addEventListener("focus", () => {
-        select.classList.toggle("is-keyboard-focus", !pointerFocus);
-      });
-      select.addEventListener("pointerdown", () => {
-        pointerFocus = true;
-        select.classList.remove("is-keyboard-focus");
-      });
+        formats.find((format) => format.id === activeFormatId) ?? formats[0];
 
       const copyText = async (text) => {
         try {
@@ -275,7 +290,55 @@ const defaultFormat = citationFormats[0];
         });
       }
 
-      select.addEventListener("change", sync);
+      for (const option of formatOptions) {
+        option.addEventListener("click", () => {
+          activeFormatId =
+            option.dataset.citationFormatOption ?? activeFormatId;
+
+          for (const candidate of formatOptions) {
+            candidate.setAttribute(
+              "aria-pressed",
+              String(candidate === option),
+            );
+          }
+
+          const format = currentFormat();
+          formatLabel.textContent = format.label;
+          formatSummary.setAttribute(
+            "aria-label",
+            `Citation format: ${format.label}`,
+          );
+
+          if (formatMenu instanceof HTMLDetailsElement) {
+            formatMenu.open = false;
+          }
+          formatSummary.focus({ preventScroll: true });
+          sync();
+        });
+      }
+
+      document.addEventListener("click", (event) => {
+        if (
+          formatMenu instanceof HTMLDetailsElement &&
+          formatMenu.open &&
+          event.target instanceof Node &&
+          !formatMenu.contains(event.target)
+        ) {
+          formatMenu.open = false;
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Escape" &&
+          formatMenu instanceof HTMLDetailsElement &&
+          formatMenu.open
+        ) {
+          formatMenu.open = false;
+          formatSummary.focus({ preventScroll: true });
+        }
+      });
+
       sync();
     })();
   </script>
@@ -327,6 +390,7 @@ const defaultFormat = citationFormats[0];
     border: 1px solid var(--line);
     border-radius: 3px;
     color: var(--muted);
+    cursor: pointer;
     display: inline-flex;
     height: 2rem;
     justify-content: center;
@@ -337,19 +401,89 @@ const defaultFormat = citationFormats[0];
     width: 2rem;
   }
 
+  .citation-icon-button:disabled {
+    cursor: default;
+  }
+
   .citation-icon-button:hover {
     background: var(--paper-sunken);
     border-color: var(--line-strong);
     color: var(--ink);
   }
 
-  .citation-select:focus:not(.is-keyboard-focus) {
-    outline: none;
-    box-shadow: none;
+  .citation-format-menu {
+    position: relative;
   }
 
-  .citation-select.is-keyboard-focus:focus {
-    outline: 2px solid var(--focus);
-    outline-offset: 3px;
+  .citation-format-menu > summary {
+    align-items: center;
+    background: var(--paper-raised);
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.75rem;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .citation-format-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .citation-format-menu[open] > summary {
+    border-color: var(--ink);
+  }
+
+  .citation-format-panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--menu-shadow);
+    padding: 0.25rem;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    width: 11rem;
+    z-index: 50;
+  }
+
+  .citation-format-option {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 2px;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    font-size: 0.875rem;
+    gap: 0.625rem;
+    padding: 0.5rem 0.625rem;
+    text-align: left;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+    width: 100%;
+  }
+
+  .citation-format-option:hover {
+    background: var(--paper-sunken);
+    color: var(--ink);
+  }
+
+  .citation-format-option[aria-pressed="true"] {
+    color: var(--ink);
+  }
+
+  .citation-format-check {
+    color: var(--accent);
+    display: none;
+    margin-left: auto;
+  }
+
+  .citation-format-option[aria-pressed="true"] .citation-format-check {
+    display: inline-flex;
   }
 </style>
