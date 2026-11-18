@@ -7,15 +7,24 @@ const light1400 = withBase("/hero-optical-field-light-1400.webp");
 const dark800 = withBase("/hero-optical-field-dark-800.webp");
 const dark1000 = withBase("/hero-optical-field-dark-1000.webp");
 const dark1400 = withBase("/hero-optical-field-dark-1400.webp");
-const sizes =
-  "(min-width: 1024px) 960px, (min-width: 640px) calc(100vw - 64px), calc(100vw - 40px)";
+
+const lightMobile500 = withBase("/hero-optical-field-light-mobile-500.webp");
+const lightMobile750 = withBase("/hero-optical-field-light-mobile-750.webp");
+const lightMobile1000 = withBase("/hero-optical-field-light-mobile-1000.webp");
+const darkMobile500 = withBase("/hero-optical-field-dark-mobile-500.webp");
+const darkMobile750 = withBase("/hero-optical-field-dark-mobile-750.webp");
+const darkMobile1000 = withBase("/hero-optical-field-dark-mobile-1000.webp");
+
+const desktopSizes =
+  "(min-width: 1024px) 960px, (min-width: 640px) calc(100vw - 64px)";
+const mobileSizes = "calc(100vw - 40px)";
 const placeholder =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 ---
 
 <figure class="mx-auto mt-10 max-w-[960px] sm:mt-14">
   <div
-    class="relative mx-auto aspect-[16/9] w-full overflow-hidden"
+    class="relative mx-auto aspect-[4/3] w-full overflow-hidden sm:aspect-[16/9]"
     role="img"
     aria-label="Illustrative isometric diagram of a central solar receiver tower surrounded by concentric rings of heliostats, with sunlight reflected toward the receiver"
   >
@@ -26,9 +35,13 @@ const placeholder =
       data-dark-src={dark800}
       data-light-srcset={`${light800} 800w, ${light1000} 1000w, ${light1400} 1400w`}
       data-dark-srcset={`${dark800} 800w, ${dark1000} 1000w, ${dark1400} 1400w`}
+      data-light-mobile-src={lightMobile750}
+      data-dark-mobile-src={darkMobile750}
+      data-light-mobile-srcset={`${lightMobile500} 500w, ${lightMobile750} 750w, ${lightMobile1000} 1000w`}
+      data-dark-mobile-srcset={`${darkMobile500} 500w, ${darkMobile750} 750w, ${darkMobile1000} 1000w`}
       width="1672"
       height="941"
-      sizes={sizes}
+      sizes={desktopSizes}
       alt=""
       aria-hidden="true"
       loading="eager"
@@ -41,17 +54,29 @@ const placeholder =
     <noscript>
       <picture class="absolute inset-0 block h-full w-full">
         <source
-          media="(prefers-color-scheme: dark)"
+          media="(min-width: 640px) and (prefers-color-scheme: dark)"
           srcset={`${dark800} 800w, ${dark1000} 1000w, ${dark1400} 1400w`}
-          sizes={sizes}
+          sizes={desktopSizes}
+          type="image/webp"
+        />
+        <source
+          media="(min-width: 640px)"
+          srcset={`${light800} 800w, ${light1000} 1000w, ${light1400} 1400w`}
+          sizes={desktopSizes}
+          type="image/webp"
+        />
+        <source
+          media="(prefers-color-scheme: dark)"
+          srcset={`${darkMobile500} 500w, ${darkMobile750} 750w, ${darkMobile1000} 1000w`}
+          sizes={mobileSizes}
           type="image/webp"
         />
         <img
-          src={light800}
-          srcset={`${light800} 800w, ${light1000} 1000w, ${light1400} 1400w`}
-          sizes={sizes}
-          width="1672"
-          height="941"
+          src={lightMobile750}
+          srcset={`${lightMobile500} 500w, ${lightMobile750} 750w, ${lightMobile1000} 1000w`}
+          sizes={mobileSizes}
+          width="1000"
+          height="750"
           alt="Illustrative isometric diagram of a central solar receiver tower surrounded by heliostats"
           class="h-full w-full object-cover"
         />
@@ -66,31 +91,35 @@ const placeholder =
     if (!(image instanceof HTMLImageElement)) return;
 
     const root = document.documentElement;
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const sizes =
-      "(min-width: 1024px) 960px, (min-width: 640px) calc(100vw - 64px), calc(100vw - 40px)";
+    const colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const desktopViewport = window.matchMedia("(min-width: 640px)");
+    const desktopSizes =
+      "(min-width: 1024px) 960px, (min-width: 640px) calc(100vw - 64px)";
+    const mobileSizes = "calc(100vw - 40px)";
 
     const resolveTheme = () => {
       const mode = root.dataset.themeMode;
-      return mode === "dark" || (mode !== "light" && media.matches)
+      return mode === "dark" || (mode !== "light" && colorScheme.matches)
         ? "dark"
         : "light";
     };
 
     const sync = () => {
       const theme = resolveTheme();
-      if (image.dataset.theme === theme) return;
+      const mobile = !desktopViewport.matches;
+      const key = `${theme}-${mobile ? "mobile" : "desktop"}`;
+      if (image.dataset.assetKey === key) return;
 
-      image.dataset.theme = theme;
-      image.sizes = sizes;
+      image.dataset.assetKey = key;
+      image.sizes = mobile ? mobileSizes : desktopSizes;
       image.style.visibility = "visible";
 
-      if (theme === "dark") {
-        image.srcset = image.dataset.darkSrcset;
-        image.src = image.dataset.darkSrc;
+      if (mobile) {
+        image.srcset = image.dataset[`${theme}MobileSrcset`];
+        image.src = image.dataset[`${theme}MobileSrc`];
       } else {
-        image.srcset = image.dataset.lightSrcset;
-        image.src = image.dataset.lightSrc;
+        image.srcset = image.dataset[`${theme}Srcset`];
+        image.src = image.dataset[`${theme}Src`];
       }
     };
 
@@ -99,6 +128,7 @@ const placeholder =
       attributes: true,
       attributeFilter: ["data-theme", "data-theme-mode"],
     });
-    media.addEventListener("change", sync);
+    colorScheme.addEventListener("change", sync);
+    desktopViewport.addEventListener("change", sync);
   })();
 </script>

@@ -23,7 +23,7 @@ const emptyBody = isUnavailable
   : "Packages are distributed through GitHub Releases.";
 ---
 
-<section class="site-container pt-10 pb-20 md:pt-12 md:pb-24">
+<section class="site-container pt-10 pb-12 md:pt-12 md:pb-14">
   {
     selected ? (
       <>
@@ -180,3 +180,46 @@ const emptyBody = isUnavailable
     )
   }
 </section>
+
+<script is:inline>
+  (() => {
+    if (window.__checksumCopyReady) return;
+    window.__checksumCopyReady = true;
+
+    document.addEventListener("click", async (event) => {
+      const target = event.target;
+      const button =
+        target instanceof Element
+          ? target.closest("[data-checksum-copy]")
+          : null;
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      const checksum = button.dataset.checksumCopy;
+      if (!checksum) return;
+
+      const check = button.querySelector("[data-checksum-check]");
+      const status = button
+        .closest("details")
+        ?.querySelector("[data-checksum-copy-status]");
+
+      try {
+        await navigator.clipboard.writeText(checksum);
+        if (check) check.classList.remove("is-hidden");
+        button.setAttribute("aria-label", "Copied");
+        button.setAttribute("data-tooltip", "Copied");
+        if (status) status.textContent = "Copied to clipboard.";
+      } catch {
+        button.setAttribute("data-tooltip", "Copy failed");
+        if (status) status.textContent = "Select the checksum to copy.";
+      }
+
+      if (button._checksumTimer) window.clearTimeout(button._checksumTimer);
+      button._checksumTimer = window.setTimeout(() => {
+        if (check) check.classList.add("is-hidden");
+        button.setAttribute("aria-label", "Copy SHA-256 checksum");
+        button.setAttribute("data-tooltip", "Copy SHA-256");
+        if (status) status.textContent = "";
+      }, 1500);
+    });
+  })();
+</script>

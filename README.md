@@ -282,18 +282,22 @@ the site theme:
 - Light: dark callouts on the paper background (`#FBFaf7`).
 - Dark: light callouts on the near-black background (`#0B0B0B`).
 
-Both are centred in a 16:9 frame with background-matched side bands, preserving
-the full composition without cropping the sun or the heliostat field.
+Both are centred in a 16:9 frame on desktop with background-matched side bands,
+preserving the full composition without cropping the sun or the heliostat field.
+Below 640 px the hero switches to a 4:3 frame and dedicated 4:3 assets so the
+diagram and its labels remain legible on mobile.
 
-Both sets include 800 px, 1000 px and 1400 px WebP variants.
-`HeroVisual.astro` loads only the image for the active theme and swaps it when
-the user changes theme or the system preference changes. The warm orange palette
-is shared by both.
+Desktop sets include 800 px, 1000 px and 1400 px WebP variants; mobile sets
+include 500 px, 750 px and 1000 px variants. `HeroVisual.astro` loads only the
+image for the active theme and viewport, and swaps it when the user changes theme,
+the system preference or the viewport crosses the breakpoint. The warm orange
+palette is shared by both.
 
 The image is presented without a visible caption; its accessible name
 describes it as illustrative. The source PNGs are not duplicated in the
-repository. The light WebP assets are about 32 KB, 44 KB and 70 KB; the dark
-assets are about 31 KB, 42 KB and 65 KB.
+repository. The desktop assets are about 32 KB, 44 KB and 70 KB for light and
+31 KB, 42 KB and 65 KB for dark; the mobile assets are about 21 KB, 39 KB and
+58 KB for light and 21 KB, 37 KB and 54 KB for dark.
 
 ## Social card
 

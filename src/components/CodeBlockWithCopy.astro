@@ -135,13 +135,13 @@ const copyLabel = `Copy ${label} commands`;
     color: var(--code-muted);
     cursor: pointer;
     display: inline-flex;
-    height: 1.75rem;
+    height: 2.5rem;
     justify-content: center;
     transition:
       background-color 150ms ease,
       border-color 150ms ease,
       color 150ms ease;
-    width: 1.75rem;
+    width: 2.5rem;
   }
 
   .code-copy-button:hover {
@@ -152,6 +152,13 @@ const copyLabel = `Copy ${label} commands`;
 
   .code-copy-button:disabled {
     cursor: default;
+  }
+
+  @media (min-width: 768px) {
+    .code-copy-button {
+      height: 2rem;
+      width: 2rem;
+    }
   }
 
   .code-copy-icon {

@@ -67,6 +67,11 @@ const themes = [
           <span data-theme-summary="dark">
             <Icon name="moon" size={16} />
           </span>
+          <Icon
+            name="chevron-down"
+            size={11}
+            class="theme-chevron text-muted transition-transform"
+          />
         </summary>
         <div class="theme-menu-panel" role="group" aria-label="Color theme">
           {
@@ -112,7 +117,7 @@ const themes = [
         <a
           href={item.href}
           class:list={[
-            "text-[13px] transition-colors",
+            "inline-flex h-11 items-center text-[13px] transition-colors",
             active === item.key
               ? "text-ink"
               : "text-muted hover:text-ink",
@@ -127,7 +132,7 @@ const themes = [
       href={SITE.repository.url}
       target="_blank"
       rel="noopener noreferrer"
-      class="ml-auto inline-flex items-center gap-1 text-[13px] text-muted transition-colors hover:text-ink"
+      class="ml-auto inline-flex h-11 items-center gap-1 text-[13px] text-muted transition-colors hover:text-ink"
     >
       GitHub
       <Icon name="arrow-up-right" size={12} />
