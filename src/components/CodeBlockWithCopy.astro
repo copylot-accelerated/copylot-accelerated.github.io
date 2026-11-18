@@ -1,0 +1,164 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  code: string;
+  label: string;
+  class?: string;
+}
+
+const { code, label, class: className = "" } = Astro.props;
+const copyLabel = `Copy ${label} commands`;
+---
+
+<div class:list={["code-copy-wrap relative", className]} data-code-block>
+  <pre class="code-block"><code>{code}</code></pre>
+  <span
+    class="code-copy-action absolute right-2 top-2"
+    data-code-copy-tooltip
+    data-tooltip={copyLabel}
+  >
+    <button
+      type="button"
+      class="code-copy-button"
+      aria-label={copyLabel}
+      data-code-copy
+    >
+      <span class="code-copy-icon" data-copy-icon>
+        <Icon name="copy" size={14} />
+      </span>
+      <span class="code-copy-icon is-hidden text-accent" data-check-icon>
+        <Icon name="check" size={14} />
+      </span>
+    </button>
+  </span>
+  <span class="sr-only" data-code-copy-status aria-live="polite"></span>
+</div>
+
+<script is:inline>
+  (() => {
+    if (window.__codeCopyReady) return;
+    window.__codeCopyReady = true;
+
+    const copyText = async (text) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    document.addEventListener("click", async (event) => {
+      const target = event.target;
+      const button =
+        target instanceof Element
+          ? target.closest("[data-code-copy]")
+          : null;
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      const block = button.closest("[data-code-block]");
+      const code = block?.querySelector("code");
+      if (!code) return;
+
+      const tooltip = button.closest("[data-code-copy-tooltip]");
+      const copyIcon = button.querySelector("[data-copy-icon]");
+      const checkIcon = button.querySelector("[data-check-icon]");
+      const status = block.querySelector("[data-code-copy-status]");
+      const defaultLabel = button.getAttribute("aria-label") ?? "Copy code";
+      const defaultTooltip =
+        tooltip?.getAttribute("data-tooltip") ?? "Copy code";
+
+      const copied = await copyText(code.textContent ?? "");
+      if (copied) {
+        if (copyIcon) copyIcon.classList.add("is-hidden");
+        if (checkIcon) checkIcon.classList.remove("is-hidden");
+        button.disabled = true;
+        button.setAttribute("aria-label", "Copied");
+        if (tooltip) tooltip.setAttribute("data-tooltip", "Copied");
+        if (status) status.textContent = "Copied to clipboard.";
+      } else {
+        if (tooltip) tooltip.setAttribute("data-tooltip", "Copy failed");
+        if (status) status.textContent = "Select the code to copy.";
+      }
+
+      window.setTimeout(() => {
+        if (copyIcon) copyIcon.classList.remove("is-hidden");
+        if (checkIcon) checkIcon.classList.add("is-hidden");
+        button.disabled = false;
+        button.setAttribute("aria-label", defaultLabel);
+        if (tooltip) tooltip.setAttribute("data-tooltip", defaultTooltip);
+        if (status) status.textContent = "";
+      }, 1500);
+    });
+  })();
+</script>
+
+<style>
+  .code-copy-wrap .code-block {
+    padding-right: 3rem;
+  }
+
+  .code-copy-action {
+    position: absolute;
+  }
+
+  .code-copy-action::after {
+    background: var(--code-ink);
+    border-radius: 2px;
+    color: var(--code-bg);
+    content: attr(data-tooltip);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.2;
+    opacity: 0;
+    padding: 5px 7px;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    transition: opacity 120ms ease;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+  .code-copy-action:hover::after,
+  .code-copy-action:focus-within::after {
+    opacity: 1;
+  }
+
+  .code-copy-button {
+    align-items: center;
+    background: transparent;
+    border: 1px solid rgba(245, 242, 236, 0.22);
+    border-radius: 3px;
+    color: var(--code-muted);
+    cursor: pointer;
+    display: inline-flex;
+    height: 1.75rem;
+    justify-content: center;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+    width: 1.75rem;
+  }
+
+  .code-copy-button:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(245, 242, 236, 0.6);
+    color: var(--code-ink);
+  }
+
+  .code-copy-button:disabled {
+    cursor: default;
+  }
+
+  .code-copy-icon {
+    display: inline-flex;
+  }
+
+  .code-copy-icon.is-hidden {
+    display: none;
+  }
+</style>
