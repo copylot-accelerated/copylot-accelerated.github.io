@@ -46,7 +46,7 @@ jobs:
           SITE_INDEXABLE: ${{ vars.SITE_INDEXABLE || 'false' }}
 
       - name: Verify release resolution with fixtures
-        run: npm run test:releases && npm run test:prerelease
+        run: npm run test:releases && npm run test:prerelease && npm run test:v011
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6

@@ -3,9 +3,23 @@ import CodeBlockWithCopy from "./CodeBlockWithCopy.astro";
 import Icon from "./Icon.astro";
 import { SITE, withBase } from "../config/site";
 import {
-  linuxInstallCommands,
-  windowsInstallCommands,
+  getReleaseInfo,
+  releaseHasExamples,
+  type ReleaseInfo,
+} from "../lib/releases";
+import {
+  examplesInstallCommands,
+  legacyInstallCommands,
 } from "../data/quickstart";
+
+interface Props {
+  release?: ReleaseInfo;
+}
+
+const { release } = Astro.props;
+const currentRelease = release ?? (await getReleaseInfo());
+const useExamples = releaseHasExamples(currentRelease);
+const commands = useExamples ? examplesInstallCommands : legacyInstallCommands;
 ---
 
 <section id="install" class="site-container py-12 md:py-16">
@@ -19,8 +33,11 @@ import {
           Install and verify
         </h2>
         <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted">
-          Extract the archive and run the included example. Python 3.12 is
-          recommended.
+          {
+            useExamples
+              ? "Extract the archive and run quickstart.py. Python 3.12 is recommended."
+              : "Extract the archive and run the included example. Python 3.12 is recommended."
+          }
         </p>
         <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3">
           <a href={withBase("/downloads/#packages")} class="btn btn-primary">
@@ -39,14 +56,14 @@ import {
       <div class="min-w-0 lg:col-span-8">
         <p class="eyebrow">Linux / macOS</p>
         <CodeBlockWithCopy
-          code={linuxInstallCommands}
+          code={commands.linux}
           label="Linux / macOS"
           class="mt-2"
         />
 
         <p class="eyebrow mt-4">Windows PowerShell</p>
         <CodeBlockWithCopy
-          code={windowsInstallCommands}
+          code={commands.windows}
           label="Windows PowerShell"
           class="mt-2"
         />

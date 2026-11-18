@@ -18,6 +18,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.resolve(here, "..", process.argv[2] ?? "dist");
 const expectRelease = process.argv.includes("--expect-release");
 const expectPrerelease = process.argv.includes("--expect-prerelease");
+const expectV011 = process.argv.includes("--expect-v011");
 
 const errors = [];
 const warnings = [];
@@ -270,8 +271,127 @@ const downloadsHtml = await readFile(
   path.join(distDir, "downloads", "index.html"),
   "utf8",
 );
+const homeHtml = await readFile(path.join(distDir, "index.html"), "utf8");
+const docsHtml = await readFile(
+  path.join(distDir, "docs", "index.html"),
+  "utf8",
+);
 
-if (expectRelease) {
+if (expectV011) {
+  const expectedAssets = [
+    "copylot-accelerated-v0.1.1-linux-x86_64-cpu.tar.gz",
+    "copylot-accelerated-v0.1.1-linux-x86_64-cuda.tar.gz",
+    "copylot-accelerated-v0.1.1-windows-x86_64-cpu.zip",
+    "copylot-accelerated-v0.1.1-macos-x86_64-cpu.tar.gz",
+    "copylot-accelerated-v0.1.1-macos-arm64-cpu.tar.gz",
+  ];
+
+  if (!downloadsHtml.includes("Latest stable release")) {
+    error("v0.1.1 fixture: latest stable release banner was not rendered.");
+  }
+  if (!downloadsHtml.includes("v0.1.1")) {
+    error("v0.1.1 fixture: selected stable tag v0.1.1 is missing.");
+  }
+  if (downloadsHtml.includes("v9.9.9")) {
+    error("v0.1.1 fixture: a draft release was rendered.");
+  }
+  for (const asset of expectedAssets) {
+    if (!downloadsHtml.includes(asset)) {
+      error(`v0.1.1 fixture: missing release asset ${asset}.`);
+    }
+    if (
+      !downloadsHtml.includes(
+        `https://github.com/JaviBonilla/CoPylot-Accelerated/releases/download/v0.1.1/${asset}`,
+      )
+    ) {
+      error(`v0.1.1 fixture: missing browser_download_url for ${asset}.`);
+    }
+  }
+  if (!downloadsHtml.includes("SHA256SUMS.txt")) {
+    error("v0.1.1 fixture: checksum asset is not referenced.");
+  }
+  if (!downloadsHtml.includes("quickstart.py")) {
+    error("v0.1.1 fixture: quickstart.py commands are missing from Downloads.");
+  }
+  if (!downloadsHtml.includes("commercial_demo/commercial_demo.py")) {
+    error("v0.1.1 fixture: Commercial Demo commands are missing from Downloads.");
+  }
+  if (!homeHtml.includes("quickstart.py")) {
+    error("v0.1.1 fixture: quickstart.py commands are missing from Home.");
+  }
+  if (!homeHtml.includes("Heliostats simulated: 12")) {
+    error("v0.1.1 fixture: expected quick-start output is missing.");
+  }
+  if (
+    !homeHtml.includes("86.52%") ||
+    !homeHtml.includes("1,268.1 kW") ||
+    !homeHtml.includes("25 rows × 25 columns")
+  ) {
+    error("v0.1.1 fixture: expected quick-start values are incomplete.");
+  }
+  if (!homeHtml.includes("explicit solar position and DNI")) {
+    error("v0.1.1 fixture: synthetic quick-start note is missing.");
+  }
+  if (homeHtml.includes("not an annual simulation")) {
+    error("v0.1.1 fixture: removed annual-simulation wording is still present.");
+  }
+  if (!homeHtml.includes("8,790 heliostats")) {
+    error("v0.1.1 fixture: Commercial Demo facts are missing from Home.");
+  }
+  for (const image of [
+    "commercial-demo-field.webp",
+    "commercial-demo-receiver-2d.webp",
+    "commercial-demo-receiver-3d.webp",
+  ]) {
+    if (!homeHtml.includes(image)) {
+      error(`v0.1.1 fixture: Commercial Demo visual ${image} is missing.`);
+    }
+    if (!(await exists(path.join(distDir, image)))) {
+      error(`v0.1.1 fixture: Commercial Demo asset ${image} is missing.`);
+    }
+  }
+  for (const title of [
+    "Field optical efficiency",
+    "Incident flux on the unwrapped receiver",
+    "Incident flux on the cylindrical receiver",
+  ]) {
+    if (!homeHtml.includes(title)) {
+      error(`v0.1.1 fixture: slideshow title "${title}" is missing.`);
+    }
+  }
+  if (
+    !homeHtml.includes('class="commercial-slideshow"') ||
+    !homeHtml.includes('aria-label="Previous commercial demo figure"') ||
+    !homeHtml.includes('aria-label="Next commercial demo figure"')
+  ) {
+    error("v0.1.1 fixture: Commercial Demo slideshow controls are missing.");
+  }
+  if (
+    homeHtml.includes("not measured operation") ||
+    downloadsHtml.includes("not measured operation")
+  ) {
+    error("v0.1.1 fixture: removed modeled-case disclaimer is still present.");
+  }
+  if (!downloadsHtml.includes("Explore real-world scale.")) {
+    error("v0.1.1 fixture: Commercial Demo summary is missing from Downloads.");
+  }
+  if (!downloadsHtml.includes("/#commercial-demo")) {
+    error("v0.1.1 fixture: Commercial Demo details link is missing.");
+  }
+  if (!docsHtml.includes("Suggested path")) {
+    error("v0.1.1 fixture: the documentation learning path is missing.");
+  }
+  for (const target of [
+    "/#quick-start",
+    "/#commercial-demo",
+    "#execution",
+    "#evidence",
+  ]) {
+    if (!docsHtml.includes(`href="${target}"`)) {
+      error(`v0.1.1 fixture: documentation path link ${target} is missing.`);
+    }
+  }
+} else if (expectRelease) {
   const expectedAssets = [
     "copylot-accelerated-v0.1.0-linux-x86_64-cpu.tar.gz",
     "copylot-accelerated-v0.1.0-linux-x86_64-cuda.tar.gz",
@@ -307,6 +427,32 @@ if (expectRelease) {
   if (!downloadsHtml.includes("Prerelease")) {
     error("Fixture build: newer prerelease should be identified in history.");
   }
+  if (!homeHtml.includes("example.py --mode refactored")) {
+    error("Fixture build: legacy Home quick-start commands are missing.");
+  }
+  if (!downloadsHtml.includes("example.py --mode refactored")) {
+    error("Fixture build: legacy Downloads commands are missing.");
+  }
+  if (
+    homeHtml.includes("quickstart.py") ||
+    downloadsHtml.includes("quickstart.py")
+  ) {
+    error("Fixture build: v0.1.1 quick-start commands leaked into v0.1.0.");
+  }
+  if (
+    homeHtml.includes("8,790 heliostats") ||
+    downloadsHtml.includes("commercial_demo.py") ||
+    homeHtml.includes("commercial-demo-receiver-2d.webp") ||
+    homeHtml.includes('class="commercial-slideshow"')
+  ) {
+    error("Fixture build: v0.1.1 Commercial Demo leaked into v0.1.0.");
+  }
+  if (docsHtml.includes("Suggested path")) {
+    error("Fixture build: v0.1.1 documentation path leaked into v0.1.0.");
+  }
+  if (!docsHtml.includes("Overview and quick start")) {
+    error("Fixture build: legacy documentation start links are missing.");
+  }
 } else if (expectPrerelease) {
   const asset =
     "copylot-accelerated-v0.2.0-rc1-linux-x86_64-cpu.tar.gz";
@@ -332,6 +478,18 @@ if (expectRelease) {
   }
   if (downloadsHtml.includes("Latest stable release")) {
     error("Prerelease fixture: incorrectly reported a stable release.");
+  }
+  if (
+    homeHtml.includes("quickstart.py") ||
+    downloadsHtml.includes("quickstart.py")
+  ) {
+    error("Prerelease fixture: v0.1.1 quick-start commands were rendered.");
+  }
+  if (homeHtml.includes("8,790 heliostats")) {
+    error("Prerelease fixture: Commercial Demo was rendered.");
+  }
+  if (docsHtml.includes("Suggested path")) {
+    error("Prerelease fixture: v0.1.1 documentation path was rendered.");
   }
 } else {
   const releasePrefix = `${SITE.repository.url}/releases/download/`;

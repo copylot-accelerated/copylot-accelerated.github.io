@@ -64,6 +64,8 @@ export const SITE = {
     api: `https://api.github.com/repos/${repository.owner}/${repository.name}/releases`,
     perPage: 30,
     checksumAsset: "SHA256SUMS.txt",
+    /** First stable release containing quickstart.py and the commercial demo. */
+    examplesMinTag: "v0.1.1",
     /** Used only when the build-time release API is unavailable. */
     fallbackTag: "v0.1.0",
   },

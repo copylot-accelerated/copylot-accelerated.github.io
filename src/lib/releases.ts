@@ -320,6 +320,39 @@ export function getReleaseInfo(): Promise<ReleaseInfo> {
   return cached;
 }
 
+function versionParts(tag: string): number[] {
+  return tag
+    .replace(/^v/i, "")
+    .split("-")[0]
+    .split(".")
+    .map((part) => Number.parseInt(part, 10) || 0);
+}
+
+export function versionAtLeast(tag: string | null, minimum: string): boolean {
+  if (!tag) return false;
+  const current = versionParts(tag);
+  const target = versionParts(minimum);
+  const length = Math.max(current.length, target.length);
+  for (let index = 0; index < length; index += 1) {
+    const left = current[index] ?? 0;
+    const right = target[index] ?? 0;
+    if (left !== right) return left > right;
+  }
+  return true;
+}
+
+/**
+ * The quick start and commercial demo are part of stable releases from
+ * v0.1.1 onward. Prereleases keep the legacy instructions until a stable
+ * release explicitly carries the new examples.
+ */
+export function releaseHasExamples(release: ReleaseInfo): boolean {
+  return (
+    release.status === "available" &&
+    versionAtLeast(release.selected?.tagName ?? null, SITE.releases.examplesMinTag)
+  );
+}
+
 export function formatReleaseDate(value: string | null): string {
   if (!value) return "Unpublished date";
   const date = new Date(value);

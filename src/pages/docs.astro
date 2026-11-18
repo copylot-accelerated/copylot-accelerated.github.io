@@ -2,13 +2,37 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CitationBlock from "../components/CitationBlock.astro";
 import DocLink from "../components/DocLink.astro";
-import { SITE } from "../config/site";
+import { SITE, withBase } from "../config/site";
+import { getReleaseInfo, releaseHasExamples } from "../lib/releases";
 
-const groups = [
-  {
-    id: "start",
-    title: "Start here",
-    links: [
+const release = await getReleaseInfo();
+const useExamples = releaseHasExamples(release);
+
+const startLinks = useExamples
+  ? [
+      {
+        title: "Quick start",
+        description: "Install a release and run quickstart.py.",
+        href: withBase("/#quick-start"),
+      },
+      {
+        title: "Commercial demo",
+        description:
+          "8,790-heliostat Daggett reference case and offline report.",
+        href: withBase("/#commercial-demo"),
+      },
+      {
+        title: "Installation and packaging",
+        description: "Archive layout, prerequisites and package validation.",
+        href: SITE.docs.packaging,
+      },
+      {
+        title: "Advanced example",
+        description: "The source-tree optical simulation.",
+        href: SITE.docs.examples,
+      },
+    ]
+  : [
       {
         title: "Overview and quick start",
         description: "Project overview, execution modes and quick start.",
@@ -24,7 +48,13 @@ const groups = [
         description: "The packaged synthetic example and source-tree simulation.",
         href: SITE.docs.examples,
       },
-    ],
+    ];
+
+const groups = [
+  {
+    id: "start",
+    title: "Start here",
+    links: startLinks,
   },
   {
     id: "execution",
@@ -131,6 +161,29 @@ const groups = [
       <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
         Guides, benchmark evidence, citation and licensing.
       </p>
+      {
+        useExamples && (
+          <p class="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-muted">
+            Suggested path:{" "}
+            <a class="link-underline" href={withBase("/#quick-start")}>
+              Quick start
+            </a>{" "}
+            →{" "}
+            <a class="link-underline" href={withBase("/#commercial-demo")}>
+              Commercial demo
+            </a>{" "}
+            →{" "}
+            <a class="link-underline" href="#execution">
+              execution backends
+            </a>{" "}
+            →{" "}
+            <a class="link-underline" href="#evidence">
+              benchmarks and reproducibility
+            </a>
+            .
+          </p>
+        )
+      }
     </div>
   </section>
 
@@ -182,7 +235,7 @@ const groups = [
         <div class="space-y-14">
           {
             groups.map((group) => (
-              <section id={group.id}>
+              <section id={group.id} class="scroll-mt-24">
                 <h2 class="pb-4 text-2xl font-medium tracking-[-0.035em]">
                   {group.title}
                 </h2>

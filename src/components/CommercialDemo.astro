@@ -1,0 +1,486 @@
+---
+import CodeBlockWithCopy from "./CodeBlockWithCopy.astro";
+import Icon from "./Icon.astro";
+import { withBase } from "../config/site";
+import {
+  getReleaseInfo,
+  releaseHasExamples,
+  type ReleaseInfo,
+} from "../lib/releases";
+import { commercialDemoCommands } from "../data/quickstart";
+
+interface Props {
+  release?: ReleaseInfo;
+  compact?: boolean;
+}
+
+const { release, compact = false } = Astro.props;
+const currentRelease = release ?? (await getReleaseInfo());
+const supported = releaseHasExamples(currentRelease);
+
+const slides = [
+  {
+    src: "/commercial-demo-field.webp",
+    width: 1050,
+    height: 650,
+    title: "Field optical efficiency",
+    alt: "Heliostat field optical efficiency map for the Daggett reference case",
+  },
+  {
+    src: "/commercial-demo-receiver-2d.webp",
+    width: 1046,
+    height: 471,
+    title: "Incident flux on the unwrapped receiver",
+    alt: "Incident flux density map on the unwrapped receiver for the Daggett reference case",
+  },
+  {
+    src: "/commercial-demo-receiver-3d.webp",
+    width: 840,
+    height: 520,
+    title: "Incident flux on the cylindrical receiver",
+    alt: "Incident flux density on the cylindrical receiver for the Daggett reference case",
+  },
+];
+---
+
+{
+  supported && !compact && (
+    <section
+      id="commercial-demo"
+      class="site-container scroll-mt-24 py-20 md:py-28"
+    >
+      <div class="grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-16">
+        <div class="lg:col-span-5">
+          <p class="eyebrow">Commercial demo</p>
+          <h2 class="mt-4 text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[1.02] tracking-[-0.045em]">
+            Explore real-world scale.
+          </h2>
+          <p class="mt-5 max-w-md text-[15px] leading-relaxed text-muted">
+            A modeled commercial reference case with 8,790 heliostats and an
+            external cylindrical receiver, running on CPU or compatible CUDA
+            hardware.
+          </p>
+          <ul class="mt-5 space-y-2 text-sm leading-relaxed text-muted">
+            <li>8,790 heliostats · public Daggett reference case</li>
+            <li>Flux map, heliostat field and receiver geometry</li>
+            <li>JSON/CSV outputs and an interactive offline HTML report</li>
+          </ul>
+        </div>
+
+        <div class="min-w-0 lg:col-span-7">
+          <div
+            class="commercial-slideshow"
+            data-commercial-slideshow
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Commercial demo figures"
+          >
+            <div class="relative border border-line bg-white p-2">
+              <div
+                class="relative mx-8 aspect-[1050/650] overflow-hidden bg-white"
+              >
+                {
+                  slides.map((slide, index) => (
+                    <figure
+                      class:list={[
+                        "commercial-slide absolute inset-0 m-0",
+                        index === 0 && "is-active",
+                      ]}
+                      data-commercial-slide
+                      data-title={slide.title}
+                      aria-hidden={index === 0 ? "false" : "true"}
+                    >
+                      <img
+                        src={withBase(slide.src)}
+                        width={slide.width}
+                        height={slide.height}
+                        alt={slide.alt}
+                        loading="lazy"
+                        decoding="async"
+                        class="h-full w-full object-contain"
+                      />
+                    </figure>
+                  ))
+                }
+              </div>
+
+              <button
+                type="button"
+                class="commercial-slide-arrow left-1"
+                data-commercial-prev
+                aria-label="Previous commercial demo figure"
+              >
+                <Icon name="chevron-left" size={16} />
+              </button>
+              <button
+                type="button"
+                class="commercial-slide-arrow right-1"
+                data-commercial-next
+                aria-label="Next commercial demo figure"
+              >
+                <Icon name="chevron-right" size={16} />
+              </button>
+            </div>
+
+            <p
+              class="mt-3 text-center text-xs font-medium tracking-[-0.01em] text-ink"
+              data-commercial-title
+            >
+              {slides[0].title}
+            </p>
+
+            <div class="relative mt-2 flex items-center justify-center">
+              <div
+                class="flex items-center gap-1"
+                role="group"
+                aria-label="Select commercial demo figure"
+              >
+                {
+                  slides.map((slide, index) => (
+                    <button
+                      type="button"
+                      class="commercial-slide-dot"
+                      data-commercial-dot={index}
+                      aria-label={`Show ${slide.title}`}
+                      aria-pressed={index === 0 ? "true" : "false"}
+                    >
+                      <span />
+                    </button>
+                  ))
+                }
+              </div>
+              <p
+                class="absolute right-0 top-1/2 -translate-y-1/2 font-mono text-[10px] tracking-[0.08em] text-muted"
+                data-commercial-counter
+                aria-hidden="true"
+              >
+                1 / {slides.length}
+              </p>
+            </div>
+            <p class="sr-only" data-commercial-status aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 border-t border-line pt-6">
+        <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <div class="lg:col-span-4">
+            <p class="eyebrow">Run the demo</p>
+            <p class="mt-2 max-w-sm text-sm leading-relaxed text-muted">
+              From the extracted archive root, after creating the Quick Start
+              environment:
+            </p>
+            <p class="mt-3 max-w-sm text-xs leading-relaxed text-muted">
+              The run produces numerical JSON/CSV results and a
+              <code class="code-inline">report.html</code> file that can be
+              opened locally in a browser.
+            </p>
+          </div>
+
+          <div class="min-w-0 lg:col-span-8">
+            <p class="eyebrow">Linux / macOS</p>
+            <CodeBlockWithCopy
+              code={commercialDemoCommands.linux}
+              label="Commercial Demo on Linux / macOS"
+              class="mt-2"
+            />
+
+            <p class="eyebrow mt-4">Windows PowerShell</p>
+            <CodeBlockWithCopy
+              code={commercialDemoCommands.windows}
+              label="Commercial Demo on Windows PowerShell"
+              class="mt-2"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  supported && compact && (
+    <section class="site-container py-12 md:py-16">
+      <div class="border-t border-line pt-6">
+        <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <div class="lg:col-span-4">
+            <p class="eyebrow">Commercial demo</p>
+            <h2 class="mt-3 text-[clamp(1.9rem,3.5vw,2.6rem)] leading-[1.02] tracking-[-0.04em]">
+              Explore real-world scale.
+            </h2>
+            <p class="mt-3 max-w-sm text-sm leading-relaxed text-muted">
+              The packages include a modeled 8,790-heliostat Daggett reference
+              case with CPU or compatible CUDA execution, JSON/CSV results and
+              an offline HTML report.
+            </p>
+            <a
+              class="link-underline mt-4 inline-flex items-center gap-1 text-sm"
+              href={withBase("/#commercial-demo")}
+            >
+              View demo details
+              <Icon name="arrow-right" size={14} />
+            </a>
+          </div>
+
+          <div class="min-w-0 lg:col-span-8">
+            <p class="eyebrow">Run the demo</p>
+            <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+              From the extracted archive root, after creating the Quick Start
+              environment:
+            </p>
+
+            <p class="eyebrow mt-4">Linux / macOS</p>
+            <CodeBlockWithCopy
+              code={commercialDemoCommands.linux}
+              label="Commercial Demo on Linux / macOS"
+              class="mt-2"
+            />
+
+            <p class="eyebrow mt-4">Windows PowerShell</p>
+            <CodeBlockWithCopy
+              code={commercialDemoCommands.windows}
+              label="Commercial Demo on Windows PowerShell"
+              class="mt-2"
+            />
+
+            <p class="mt-3 text-xs leading-relaxed text-muted">
+              The run produces numerical JSON/CSV results and a
+              <code class="code-inline">report.html</code> file that can be
+              opened locally in a browser.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .commercial-slide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+
+  .commercial-slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .commercial-slide-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    transform: translateY(-50%);
+    border: 1px solid rgba(17, 17, 17, 0.14);
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.88);
+    color: #1a1a1a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .commercial-slide-arrow:hover {
+    background: #fff;
+    border-color: rgba(17, 17, 17, 0.3);
+  }
+
+  .commercial-slide-arrow:active {
+    transform: translateY(-50%) scale(0.96);
+  }
+
+  .commercial-slide-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .commercial-slide-dot span {
+    display: block;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: var(--line-strong);
+    transition:
+      width 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .commercial-slide-dot:hover span {
+    background: var(--ink-soft);
+  }
+
+  .commercial-slide-dot[aria-pressed="true"] span {
+    width: 1.375rem;
+    background: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .commercial-slide,
+    .commercial-slide-arrow,
+    .commercial-slide-dot span {
+      transition: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    document.querySelectorAll("[data-commercial-slideshow]").forEach((root) => {
+      if (root.dataset.commercialReady === "true") return;
+      root.dataset.commercialReady = "true";
+
+      const slides = [...root.querySelectorAll("[data-commercial-slide]")];
+      const dots = [...root.querySelectorAll("[data-commercial-dot]")];
+      const prev = root.querySelector("[data-commercial-prev]");
+      const next = root.querySelector("[data-commercial-next]");
+      const title = root.querySelector("[data-commercial-title]");
+      const counter = root.querySelector("[data-commercial-counter]");
+      const status = root.querySelector("[data-commercial-status]");
+      if (slides.length < 2) return;
+
+      let index = 0;
+      let timer = 0;
+      let hovered = false;
+      let focused = false;
+      let visible = true;
+
+      const render = (nextIndex, announce = false) => {
+        index = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => {
+          const active = slideIndex === index;
+          slide.classList.toggle("is-active", active);
+          slide.setAttribute("aria-hidden", String(!active));
+        });
+        dots.forEach((dot, dotIndex) => {
+          dot.setAttribute("aria-pressed", String(dotIndex === index));
+        });
+        const active = slides[index];
+        if (title) title.textContent = active.dataset.title ?? "";
+        if (counter) counter.textContent = `${index + 1} / ${slides.length}`;
+        if (announce && status) {
+          status.textContent = `Slide ${index + 1} of ${slides.length}: ${active.dataset.title ?? ""}`;
+        }
+      };
+
+      const stop = () => {
+        if (!timer) return;
+        window.clearInterval(timer);
+        timer = 0;
+      };
+
+      const start = () => {
+        stop();
+        if (
+          !visible ||
+          hovered ||
+          focused ||
+          reduceMotion.matches ||
+          document.hidden
+        ) {
+          return;
+        }
+        timer = window.setInterval(() => render(index + 1), 6000);
+      };
+
+      const update = () => {
+        if (hovered || focused) stop();
+        else start();
+      };
+
+      const go = (delta) => {
+        render(index + delta, true);
+        start();
+      };
+
+      prev?.addEventListener("click", () => go(-1));
+      next?.addEventListener("click", () => go(1));
+      dots.forEach((dot, dotIndex) => {
+        dot.addEventListener("click", () => {
+          if (dotIndex === index) return;
+          render(dotIndex, true);
+          start();
+        });
+      });
+
+      root.addEventListener("mouseenter", () => {
+        hovered = true;
+        update();
+      });
+      root.addEventListener("mouseleave", () => {
+        hovered = false;
+        update();
+      });
+      root.addEventListener("focusin", () => {
+        focused = true;
+        update();
+      });
+      root.addEventListener("focusout", (event) => {
+        if (root.contains(event.relatedTarget)) return;
+        focused = false;
+        update();
+      });
+      root.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          go(-1);
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          go(1);
+        }
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop();
+        else start();
+      });
+      if (typeof reduceMotion.addEventListener === "function") {
+        reduceMotion.addEventListener("change", start);
+      }
+
+      if (typeof IntersectionObserver === "function") {
+        visible = false;
+        const observer = new IntersectionObserver(
+          (entries) => {
+            visible = entries.some((entry) => entry.isIntersecting);
+            if (visible) {
+              root.querySelectorAll("img").forEach((image) => {
+                image.loading = "eager";
+              });
+            }
+            update();
+          },
+          { threshold: 0.35 },
+        );
+        observer.observe(root);
+      } else {
+        root.querySelectorAll("img").forEach((image) => {
+          image.loading = "eager";
+        });
+      }
+
+      render(0);
+      start();
+    });
+  })();
+</script>

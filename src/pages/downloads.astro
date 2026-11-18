@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import CommercialDemo from "../components/CommercialDemo.astro";
 import DownloadStatus from "../components/DownloadStatus.astro";
 import InstallInstructions from "../components/InstallInstructions.astro";
 import SystemRequirements from "../components/SystemRequirements.astro";
@@ -36,5 +37,6 @@ const description =
 
   <DownloadStatus release={release} />
   <SystemRequirements />
-  <InstallInstructions />
+  <InstallInstructions release={release} />
+  <CommercialDemo release={release} compact />
 </BaseLayout>
