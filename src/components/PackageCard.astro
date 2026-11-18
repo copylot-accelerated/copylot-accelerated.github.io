@@ -24,23 +24,51 @@ const { spec, asset } = entry;
     </span>
   </div>
 
-  <div class="min-w-0 md:col-span-5">
+  <div class="min-w-0 md:col-span-6">
     {
       asset ? (
         <>
           <p class="break-all font-mono text-[11px] leading-relaxed text-ink-soft">
             {asset.name}
           </p>
-          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted">
-            <span>{formatBytes(asset.sizeBytes)}</span>
+          <div class="mt-2 flex items-start gap-x-4 text-[11px] text-muted">
+            <span class="shrink-0">{formatBytes(asset.sizeBytes)}</span>
             {asset.sha256 ? (
-              <details>
-                <summary class="cursor-pointer list-none font-mono text-[10px] uppercase tracking-[0.08em] text-muted transition-colors hover:text-ink">
+              <details class="group min-w-0 flex-1">
+                <summary
+                  class="inline-flex cursor-pointer list-none items-center gap-1 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.08em] text-muted transition-colors hover:text-ink"
+                >
                   SHA-256
+                  <Icon
+                    name="chevron-down"
+                    size={10}
+                    class="transition-transform group-open:rotate-180"
+                  />
                 </summary>
-                <code class="mt-1 block break-all text-[10px] leading-relaxed text-ink-soft">
-                  {asset.sha256}
-                </code>
+                <div class="mt-2">
+                  <button
+                    type="button"
+                    class="checksum-code inline-block max-w-full"
+                    data-checksum-copy={asset.sha256}
+                    data-checksum-copy-tooltip
+                    data-tooltip="Copy SHA-256"
+                    aria-label="Copy SHA-256 checksum"
+                  >
+                    <code class="break-all">{asset.sha256}</code>
+                    <span
+                      class="checksum-check is-hidden text-accent"
+                      data-checksum-check
+                      aria-hidden="true"
+                    >
+                      <Icon name="check" size={13} />
+                    </span>
+                  </button>
+                  <span
+                    class="sr-only"
+                    data-checksum-copy-status
+                    aria-live="polite"
+                  ></span>
+                </div>
               </details>
             ) : checksumUrl ? (
               <a
@@ -63,7 +91,7 @@ const { spec, asset } = entry;
     }
   </div>
 
-  <div class="flex items-center md:col-span-4 md:justify-end">
+  <div class="flex items-center md:col-span-3 md:justify-end">
     {
       asset ? (
         <a
@@ -80,3 +108,59 @@ const { spec, asset } = entry;
     }
   </div>
 </article>
+
+<style>
+  .checksum-code {
+    background: transparent;
+    border: 0;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.625;
+    max-width: 100%;
+    padding: 0 1.35rem 0 0;
+    position: relative;
+    text-align: left;
+    transition: color 150ms ease;
+  }
+
+  .checksum-code:hover {
+    color: var(--ink);
+  }
+
+  .checksum-code::after {
+    background: var(--ink);
+    border-radius: 2px;
+    color: var(--paper);
+    content: attr(data-tooltip);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    left: 0;
+    line-height: 1.2;
+    opacity: 0;
+    padding: 5px 7px;
+    pointer-events: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    transition: opacity 120ms ease;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  .checksum-code:hover::after,
+  .checksum-code:focus-visible::after {
+    opacity: 1;
+  }
+
+  .checksum-check {
+    bottom: 0.1em;
+    display: inline-flex;
+    position: absolute;
+    right: 0;
+  }
+
+  .checksum-check.is-hidden {
+    display: none;
+  }
+</style>
