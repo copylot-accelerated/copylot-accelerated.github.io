@@ -46,6 +46,7 @@ export const SITE = {
   description:
     "A faster execution layer for the SolarPILOT/CoPylot optical model, with optimized CPU, multicore and CUDA execution in validated packages.",
   author: "Javier Bonilla",
+  authorUrl: "https://javier.solar",
   origin,
   base: normalizedBase,
   url:

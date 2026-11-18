@@ -133,7 +133,18 @@ const groups = [
     <div
       class="mt-12 flex flex-col gap-3 border-t border-line pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between"
     >
-      <p>© {SITE.buildYear} Javier Bonilla.</p>
+      <p>
+        © {SITE.buildYear}
+        <a
+          class="link-underline"
+          href={SITE.authorUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Javier Bonilla
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>.
+      </p>
       <a
         class="link-underline inline-flex items-center gap-1"
         href={SITE.repository.url}
