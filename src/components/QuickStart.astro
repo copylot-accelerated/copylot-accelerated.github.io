@@ -1,6 +1,7 @@
 ---
 import CodeBlockWithCopy from "./CodeBlockWithCopy.astro";
-import { SITE } from "../config/site";
+import Icon from "./Icon.astro";
+import { SITE, withBase } from "../config/site";
 import {
   linuxInstallCommands,
   windowsInstallCommands,
@@ -20,18 +21,16 @@ import {
         Download an archive, install its requirements and run the example.
         Python 3.12 is recommended.
       </p>
-      <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+      <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3">
+        <a href={withBase("/downloads/")} class="btn btn-primary">
+          <Icon name="download" size={16} />
+          Download packages
+        </a>
         <a
-          class="link-underline"
-          href={SITE.docs.installation}
-          target="_blank"
-          rel="noopener noreferrer">Installation guide ↗</a
-        >
-        <a
-          class="link-underline"
+          class="link-underline text-xs"
           href={SITE.docs.build}
           target="_blank"
-          rel="noopener noreferrer">Build from source ↗</a
+          rel="noopener noreferrer">Advanced: Build from source ↗</a
         >
       </div>
     </div>
