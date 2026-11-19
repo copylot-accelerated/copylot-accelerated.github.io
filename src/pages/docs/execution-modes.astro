@@ -1,0 +1,593 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import CodeBlockWithCopy from "../../components/CodeBlockWithCopy.astro";
+import Icon from "../../components/Icon.astro";
+import { SITE, withBase } from "../../config/site";
+import { getReleaseInfo, releaseHasExamples } from "../../lib/releases";
+
+const release = await getReleaseInfo();
+const useExamples = releaseHasExamples(release);
+
+const fullExampleHref = useExamples
+  ? SITE.docs.quickstartSource
+  : SITE.docs.packagedExample;
+const fullExampleLabel = useExamples
+  ? "Full Quick Start source"
+  : "Full packaged example source";
+
+const contents = [
+  { id: "modes", label: "The four modes" },
+  { id: "backend", label: "Backend vs mode" },
+  { id: "commercial-demo", label: "Packaged Commercial Demo" },
+  { id: "python-api", label: "Python API" },
+  { id: "original", label: "Original execution" },
+  { id: "parallelism", label: "Threading and parallelism" },
+  { id: "cuda", label: "CUDA compatibility" },
+];
+
+const modeRows = [
+  {
+    mode: "Original",
+    backend: "CPU legacy",
+    execution:
+      "Retained original calculation, one thread. Requires a diagnostics-enabled build.",
+  },
+  {
+    mode: "Refactored CPU",
+    backend: "cpu",
+    execution: "Optimized calculation, one thread.",
+  },
+  {
+    mode: "Multicore CPU",
+    backend: "cpu",
+    execution: "Optimized calculation using multiple CPU threads.",
+  },
+  {
+    mode: "CUDA GPU",
+    backend: "cuda",
+    execution: "Supported numerical stages executed on an NVIDIA GPU.",
+  },
+];
+
+const commercialDemoCommands = `.venv/bin/python \\
+  commercial_demo/commercial_demo.py \\
+  --mode refactored \\
+  --output artifacts/refactored \\
+  --no-open
+
+.venv/bin/python \\
+  commercial_demo/commercial_demo.py \\
+  --mode multicore --threads 8 \\
+  --output artifacts/multicore \\
+  --no-open
+
+.venv/bin/python \\
+  commercial_demo/commercial_demo.py \\
+  --mode cuda \\
+  --output artifacts/cuda \\
+  --no-open`;
+
+const originalCommand = `.venv/bin/python \\
+  commercial_demo/commercial_demo.py \\
+  --mode original \\
+  --output artifacts/original \\
+  --no-open`;
+
+const apiFragment = `# Fragment: api and a configured context already exist.
+try:
+    # Use "cuda" for CUDA GPU.
+    api.set_compute_backend(context, "cpu")
+    # Use nthreads=8 for Multicore CPU.
+    if not api.simulate(context, nthreads=1):
+        error = api.get_last_backend_error(context)
+        raise RuntimeError(error or "Simulation failed")
+finally:
+    api.data_free(context)`;
+---
+
+<BaseLayout
+  title="Execution modes"
+  description="Select CPU, multicore and CUDA execution in CoPylot-Accelerated using the packaged examples or the Python API."
+  path="/docs/execution-modes/"
+  active="docs"
+>
+  <section class="border-b border-line">
+    <div class="site-container py-16 text-center md:py-20 lg:py-24">
+      <p class="eyebrow">Documentation</p>
+      <h1
+        class="mt-4 text-[clamp(2.8rem,6vw,4.7rem)] leading-[0.98] tracking-[-0.05em]"
+      >
+        Execution modes
+      </h1>
+      <p
+        class="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-muted sm:text-base"
+      >
+        Learn how to select CPU, multicore and CUDA execution in
+        CoPylot-Accelerated, using either the packaged examples or the Python
+        API.
+      </p>
+      <p class="mt-3 text-xs leading-relaxed text-muted">
+        <a class="link-underline" href={withBase("/docs/")}
+          >Documentation index</a
+        >
+        ·{" "}
+        <a class="link-underline" href={withBase("/downloads/")}
+          >Download packages</a
+        >
+      </p>
+    </div>
+  </section>
+
+  <section class="site-container py-16 md:py-20">
+    <div class="docs-layout grid gap-12 lg:grid-cols-12 lg:gap-12">
+      <aside class="hidden lg:col-span-3 lg:block">
+        <nav class="sticky top-24" aria-label="On this page">
+          <p class="eyebrow">On this page</p>
+          <ul class="mt-4 space-y-3 border-l border-line pl-4">
+            {
+              contents.map((item) => (
+                <li>
+                  <a
+                    href={`#${item.id}`}
+                    class="text-sm text-muted transition-colors hover:text-ink"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </aside>
+
+      <div class="min-w-0 lg:col-span-9">
+        <nav
+          class="mb-10 flex flex-wrap gap-x-5 gap-y-2 border-y border-line py-3 text-xs lg:hidden"
+          aria-label="On this page"
+        >
+          {
+            contents.map((item) => (
+              <a class="link-underline" href={`#${item.id}`}>{item.label}</a>
+            ))
+          }
+        </nav>
+
+        <article class="space-y-14">
+          <section id="modes" class="scroll-mt-24">
+            <h2 class="text-2xl font-medium tracking-[-0.035em]">
+              The four modes
+            </h2>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              The named modes share the Hermite optical formulation and the
+              CoPylot API. They differ in the backend and in how the work is
+              executed.
+            </p>
+
+            <div class="mt-6 divide-y divide-line border-y border-line md:hidden">
+              {
+                modeRows.map((row) => (
+                  <div class="py-4">
+                    <p class="text-sm font-medium text-ink">{row.mode}</p>
+                    <p
+                      class:list={[
+                        "mt-1 text-xs text-muted",
+                        row.backend !== "CPU legacy" && "font-mono",
+                      ]}
+                    >
+                      {row.backend}
+                    </p>
+                    <p class="mt-2 text-sm leading-relaxed text-muted">
+                      {row.execution}
+                    </p>
+                  </div>
+                ))
+              }
+            </div>
+
+            <div class="mt-6 hidden overflow-x-auto border-y border-line md:block">
+              <table class="w-full min-w-[38rem] border-collapse text-left text-sm">
+                <caption class="sr-only">
+                  Execution modes and their backend selection.
+                </caption>
+                <thead>
+                  <tr class="text-[10px] uppercase tracking-[0.08em] text-muted">
+                    <th scope="col" class="py-3 pr-4 font-medium">Mode</th>
+                    <th scope="col" class="py-3 pr-4 font-medium">Backend</th>
+                    <th scope="col" class="py-3 font-medium">Execution</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-line">
+                  {
+                    modeRows.map((row) => (
+                      <tr>
+                        <th
+                          scope="row"
+                          class="py-4 pr-4 align-top font-medium text-ink"
+                        >
+                          {row.mode}
+                        </th>
+                        <td
+                          class:list={[
+                            "py-4 pr-4 align-top text-muted",
+                            row.backend !== "CPU legacy" && "font-mono text-xs",
+                          ]}
+                        >
+                          {row.backend}
+                        </td>
+                        <td class="py-4 align-top text-muted">
+                          {row.execution}
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div
+              class="mt-5 border-l-2 border-accent pl-4 text-sm leading-relaxed text-muted"
+            >
+              <p>
+                <span class="font-medium text-ink">Default choice:</span> start
+                with Refactored CPU. Use Multicore CPU when one simulation can
+                use more CPU threads. Use CUDA GPU only on a supported
+                Linux/SM 89 configuration. Use Original only for diagnostics
+                and comparisons.
+              </p>
+            </div>
+          </section>
+
+          <section id="backend" class="scroll-mt-24">
+            <h2 class="text-2xl font-medium tracking-[-0.035em]">
+              Backend selection is not the same as an execution mode
+            </h2>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              Select the backend with
+              <code class="code-inline"
+                >set_compute_backend(context, "cpu" | "cuda")</code
+              >. Refactored CPU and Multicore CPU both use the
+              <code class="code-inline">cpu</code> backend; the difference is
+              the thread count passed to
+              <code class="code-inline">simulate(..., nthreads=N)</code>. CUDA
+              uses the <code class="code-inline">cuda</code> backend and
+              requires <code class="code-inline">nthreads=1</code>.
+            </p>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              Original is not a third backend name. It is the retained CPU
+              legacy calculation path, selected with diagnostics environment
+              variables on top of the CPU backend.
+            </p>
+          </section>
+
+          <section id="commercial-demo" class="scroll-mt-24">
+            <h2 class="text-2xl font-medium tracking-[-0.035em]">
+              Using the packaged Commercial Demo
+            </h2>
+            {
+              useExamples ? (
+                <>
+                  <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+                    From the extracted package root, using the existing virtual
+                    environment. Each command writes to a distinct output
+                    directory so the runs can be compared.
+                  </p>
+
+                  <CodeBlockWithCopy
+                    code={commercialDemoCommands}
+                    label="Commercial Demo mode commands"
+                    class="mt-4"
+                  />
+
+                  <p class="mt-3 text-xs leading-relaxed text-muted">
+                    On Windows PowerShell, use
+                    <code class="code-inline"
+                      >.\.venv\Scripts\python.exe</code
+                    >
+                    with
+                    <code class="code-inline"
+                      >commercial_demo\commercial_demo.py</code
+                    >, and put each command on one line. Keep the same mode,
+                    thread and output arguments. <code class="code-inline"
+                      >--no-open</code
+                    >
+                    prints the report path without opening a browser.
+                  </p>
+
+                  <div class="mt-5 space-y-3 text-sm leading-relaxed text-muted">
+                    <p>
+                      <span class="font-medium text-ink"
+                        >Refactored CPU (default):</span
+                      >
+                      one CPU thread. The first command above uses this mode.
+                    </p>
+                    <p>
+                      <span class="font-medium text-ink">Multicore CPU:</span>
+                      pass <code class="code-inline">--threads</code> with a
+                      supported thread count. The CLI defaults to 4 and requires
+                      at least 2 for this mode; the example uses 8.
+                    </p>
+                    <p>
+                      <span class="font-medium text-ink">CUDA GPU:</span>
+                      requires a CUDA package, a compatible GPU and driver, and
+                      uses one simulation thread. It takes no multicore thread
+                      count.
+                    </p>
+                  </div>
+
+                  <div
+                    class="mt-5 border-l-2 border-line pl-4 text-sm leading-relaxed text-muted"
+                  >
+                    <p>
+                      <span class="font-medium text-ink">Output directories.</span>
+                      The demo refuses to overwrite an existing output directory,
+                      including a previous run at the same operating point. Use a
+                      unique <code class="code-inline">--output</code> path for
+                      each mode. If omitted, the default is
+                      <code class="code-inline"
+                        >artifacts/commercial-demo/commercial-&lt;date&gt;-&lt;time&gt;</code
+                      >.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+                  The packaged Commercial Demo and
+                  <code class="code-inline">quickstart.py</code> are included
+                  from v0.1.1 onward. For older packages, follow the Home page
+                  Quick Start or use the Python API example below.
+                </p>
+              )
+            }
+          </section>
+
+          <section id="python-api" class="scroll-mt-24">
+            <h2 class="text-2xl font-medium tracking-[-0.035em]">
+              Using the Python API
+            </h2>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              In your own application, add the extracted package's
+              <code class="code-inline">python/</code> directory to
+              <code class="code-inline">PYTHONPATH</code> and import
+              <code class="code-inline">CoPylot</code> from
+              <code class="code-inline">copylot_accelerated</code>. The fragment
+              below assumes <code class="code-inline">api</code> and a
+              <code class="code-inline">context</code> already exist, with a
+              configured solar field, receiver and optical operating point, and
+              that the caller owns the context. It is not a standalone script.
+            </p>
+
+            <CodeBlockWithCopy
+              code={apiFragment}
+              label="Python API fragment"
+              class="mt-4"
+            />
+
+            <div class="mt-4 space-y-2 text-sm leading-relaxed text-muted">
+              <p>
+                <span class="font-medium text-ink">Refactored CPU:</span>
+                select <code class="code-inline">"cpu"</code> and use
+                <code class="code-inline">nthreads=1</code>.
+              </p>
+              <p>
+                <span class="font-medium text-ink">Multicore CPU:</span>
+                keep the <code class="code-inline">cpu</code> backend and pass a
+                supported thread count, for example
+                <code class="code-inline">nthreads=8</code>.
+              </p>
+              <p>
+                <span class="font-medium text-ink">CUDA GPU:</span>
+                select <code class="code-inline">"cuda"</code> and keep
+                <code class="code-inline">nthreads=1</code>.
+              </p>
+            </div>
+
+            <p class="mt-4 max-w-3xl text-sm leading-relaxed text-muted">
+              <code class="code-inline">set_compute_backend</code> raises
+              <code class="code-inline">RuntimeError</code> if the backend cannot
+              be selected. <code class="code-inline">simulate</code> returns
+              <code class="code-inline">False</code> on failure;
+              <code class="code-inline">get_last_backend_error(context)</code>
+              returns the backend diagnostic. Always free a context you create.
+            </p>
+
+            <p class="mt-4 text-sm leading-relaxed text-muted">
+              <a
+                class="link-underline inline-flex items-center gap-1"
+                href={fullExampleHref}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {fullExampleLabel}
+                <Icon name="arrow-up-right" size={12} />
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+              — complete example of creating, configuring, simulating and
+              freeing a context.
+            </p>
+          </section>
+
+          <section id="original" class="scroll-mt-24">
+            <h2 class="text-2xl font-medium tracking-[-0.035em]">
+              Original execution
+            </h2>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              Original is a retained reference path, not an independent backend
+              name. It uses the CPU backend, one simulation thread and legacy
+              calculation paths. The native library must be built with
+              diagnostics enabled.
+            </p>
+
+            <ul class="mt-4 space-y-2 text-sm leading-relaxed text-muted">
+              <li>
+                <code class="code-inline"
+                  >SOLARPILOT_INTERCEPT_PATH=legacy</code
+                >
+              </li>
+              <li>
+                <code class="code-inline">SOLARPILOT_FLUX_PATH=legacy</code>
+              </li>
+              <li>CPU backend with one simulation thread.</li>
+              <li>
+                A diagnostics-enabled build; check
+                <code class="code-inline">BUILD.json</code> for your package.
+              </li>
+            </ul>
+
+            {
+              useExamples ? (
+                <p class="mt-4 max-w-3xl text-sm leading-relaxed text-muted">
+                  The v0.1.1 Linux CPU package reports
+                  <code class="code-inline">diagnostics: true</code> in
+                  <code class="code-inline">BUILD.json</code>; confirm the flag
+                  for your archive. The Commercial Demo sets the legacy
+                  variables only for its own run. In your own application,
+                  isolate them in a separate process or restore the environment
+                  before using the standard CPU or CUDA paths.
+                </p>
+              ) : (
+                <p class="mt-4 max-w-3xl text-sm leading-relaxed text-muted">
+                  Check <code class="code-inline">BUILD.json</code> in your
+                  package for the diagnostics flag. In your own application,
+                  isolate the legacy variables in a separate process or restore
+                  the environment before using the standard CPU or CUDA paths.
+                </p>
+              )
+            }
+
+            {
+              useExamples && (
+                <CodeBlockWithCopy
+                  code={originalCommand}
+                  label="Original mode command"
+                  class="mt-4"
+                />
+              )
+            }
+
+            <p class="mt-4 max-w-3xl text-xs leading-relaxed text-muted">
+              Original is intended for diagnostic comparison and numerical
+              checks. Do not use it as the default production mode.
+            </p>
+          </section>
+
+          <section id="parallelism" class="scroll-mt-24">
+            <h2 class="text-2xl font-medium tracking-[-0.035em]">
+              Threading and parallelism
+            </h2>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              Two different forms of parallelism matter:
+            </p>
+
+            <ol class="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-muted">
+              <li>
+                <span class="font-medium text-ink"
+                  >Parallelism within one simulation.</span
+                >
+                <code class="code-inline">simulate(..., nthreads=N)</code> uses
+                multiple CPU threads for supported CPU numerical stages.
+                Refactored CPU uses one thread; Multicore CPU uses more. CUDA
+                requires <code class="code-inline">nthreads=1</code>.
+              </li>
+              <li>
+                <span class="font-medium text-ink"
+                  >Parallelism across independent simulations.</span
+                >
+                Multiple contexts can evaluate different operating points. The
+                archived annual benchmark uses 24 independent states for
+                Multicore CPU and 24 rolling contexts for CUDA.
+              </li>
+            </ol>
+
+            <p class="mt-4 max-w-3xl text-sm leading-relaxed text-muted">
+              The annual benchmark's multi-context execution is not reproduced
+              automatically by selecting
+              <code class="code-inline">--mode cuda</code> or setting a large
+              thread count. Use the dedicated benchmark and reproducibility
+              workflows for that comparison.
+            </p>
+
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              Technical detail:
+              <a
+                class="link-underline"
+                href={SITE.docs.multicore}
+                target="_blank"
+                rel="noopener noreferrer">multicore implementation ↗</a
+              >
+              ·{" "}
+              <a
+                class="link-underline"
+                href={SITE.docs.reproducibility}
+                target="_blank"
+                rel="noopener noreferrer">annual benchmark workflow ↗</a
+              >
+            </p>
+          </section>
+
+          <section id="cuda" class="scroll-mt-24">
+            <h2 class="text-2xl font-medium tracking-[-0.035em]">
+              CUDA compatibility
+            </h2>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              The CUDA path is distributed as a separate Linux x86_64 package.
+              It requires:
+            </p>
+
+            <ul class="mt-4 space-y-2 text-sm leading-relaxed text-muted">
+              <li>
+                CUDA Runtime <strong class="font-medium text-ink">13.0.88</strong>
+                (<code class="code-inline">libcudart.so.13</code>).
+              </li>
+              <li>
+                An NVIDIA GPU with compute capability
+                <strong class="font-medium text-ink">SM 89</strong>.
+              </li>
+              <li>
+                A compatible NVIDIA driver. CUDA 13.0 Update 1 lists
+                580.82.07 or newer.
+              </li>
+              <li>
+                A supported Hermite optical configuration and
+                <code class="code-inline">nthreads=1</code>.
+              </li>
+            </ul>
+
+            <p class="mt-4 max-w-3xl text-sm leading-relaxed text-muted">
+              The validated path supports Hermite analytical flux with one
+              enabled receiver. Receiver geometry, aiming, canting and facet
+              limits are documented in the
+              <a
+                class="link-underline"
+                href={SITE.docs.backend}
+                target="_blank"
+                rel="noopener noreferrer"
+                >backend compatibility guide ↗</a
+              >.
+            </p>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+              A requested CUDA operation never silently falls back to CPU. An
+              unsupported device or configuration returns a backend error that
+              can be read with
+              <code class="code-inline">get_last_backend_error(context)</code>.
+            </p>
+          </section>
+        </article>
+
+        <div
+          class="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6"
+        >
+          <a
+            class="link-underline inline-flex items-center gap-1 text-sm"
+            href={withBase("/docs/")}
+          >
+            <Icon name="chevron-left" size={14} />
+            Documentation index
+          </a>
+          <a class="link-underline text-sm" href={withBase("/#quick-start")}
+            >Quick Start</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { absoluteUrl } from "../config/site";
 
-const pages = ["/", "/downloads/", "/docs/"];
+const pages = ["/", "/downloads/", "/docs/", "/docs/execution-modes/"];
 
 export const GET: APIRoute = () => {
   const urls = pages

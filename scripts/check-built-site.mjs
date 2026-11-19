@@ -91,6 +91,7 @@ const requiredFiles = [
   "index.html",
   "downloads/index.html",
   "docs/index.html",
+  "docs/execution-modes/index.html",
   "404.html",
   "robots.txt",
   "sitemap.xml",
@@ -253,14 +254,14 @@ const sitemapLocations = [
   ...sitemap.matchAll(/<loc>(.*?)<\/loc>/g),
 ].map((match) => match[1]);
 
-if (sitemapLocations.length !== 3) {
-  error(`sitemap.xml: expected 3 canonical URLs, found ${sitemapLocations.length}.`);
+if (sitemapLocations.length !== 4) {
+  error(`sitemap.xml: expected 4 canonical URLs, found ${sitemapLocations.length}.`);
 }
 if (sitemapLocations.some((location) => location.endsWith("/404/"))) {
   error("sitemap.xml: the 404 page must not be listed.");
 }
 
-for (const route of ["/", "/downloads/", "/docs/"]) {
+for (const route of ["/", "/downloads/", "/docs/", "/docs/execution-modes/"]) {
   const expected = `${SITE.url}${route === "/" ? "/" : route}`;
   if (!sitemap.includes(`<loc>${expected}</loc>`)) {
     error(`sitemap.xml: missing ${expected}.`);
@@ -276,6 +277,20 @@ const docsHtml = await readFile(
   path.join(distDir, "docs", "index.html"),
   "utf8",
 );
+const executionHtml = await readFile(
+  path.join(distDir, "docs", "execution-modes", "index.html"),
+  "utf8",
+);
+
+if (
+  !executionHtml.includes("Execution modes") ||
+  !executionHtml.includes("set_compute_backend") ||
+  !executionHtml.includes("simulate(context, nthreads=1)") ||
+  !executionHtml.includes("get_last_backend_error(context)") ||
+  !executionHtml.includes("SOLARPILOT_INTERCEPT_PATH")
+) {
+  error("Execution modes guide: required practical content is missing.");
+}
 
 if (expectV011) {
   const expectedAssets = [
@@ -384,12 +399,15 @@ if (expectV011) {
   for (const target of [
     "/#quick-start",
     "/#commercial-demo",
-    "#execution",
-    "#evidence",
+    "/docs/execution-modes/",
+    "#validation",
   ]) {
     if (!docsHtml.includes(`href="${target}"`)) {
       error(`v0.1.1 fixture: documentation path link ${target} is missing.`);
     }
+  }
+  if (!executionHtml.includes("commercial_demo.py")) {
+    error("v0.1.1 fixture: execution guide demo commands are missing.");
   }
 } else if (expectRelease) {
   const expectedAssets = [

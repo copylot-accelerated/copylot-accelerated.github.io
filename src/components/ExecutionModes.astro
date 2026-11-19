@@ -1,6 +1,7 @@
 ---
+import Icon from "./Icon.astro";
 import SectionHeader from "./SectionHeader.astro";
-import { SITE, withBase } from "../config/site";
+import { withBase } from "../config/site";
 
 const modes = [
   {
@@ -49,13 +50,14 @@ const modes = [
     }
   </div>
 
-  <div class="mt-10 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+  <div class="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
     <a
-      class="link-underline"
-      href={SITE.docs.backend}
-      target="_blank"
-      rel="noopener noreferrer">Backend guide ↗</a
+      class="link-underline inline-flex items-center gap-1 font-medium"
+      href={withBase("/docs/execution-modes/")}
     >
+      How to select an execution mode
+      <Icon name="arrow-right" size={12} />
+    </a>
     <a class="link-underline" href={withBase("/downloads/#requirements")}
       >Runtime requirements</a
     >

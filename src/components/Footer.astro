@@ -24,13 +24,13 @@ const groups = [
     links: [
       {
         label: "Installation",
-        href: SITE.docs.installation,
-        external: true,
+        href: withBase("/downloads/"),
+        external: false,
       },
       {
-        label: "Execution backends",
-        href: SITE.docs.backend,
-        external: true,
+        label: "Execution modes",
+        href: withBase("/docs/execution-modes/"),
+        external: false,
       },
       {
         label: "Benchmarks",

@@ -2,72 +2,39 @@
 import Icon from "./Icon.astro";
 import SectionHeader from "./SectionHeader.astro";
 import { SITE, withBase } from "../config/site";
-import { getReleaseInfo, releaseHasExamples } from "../lib/releases";
 
-const release = await getReleaseInfo();
-const useExamples = releaseHasExamples(release);
-
-const resources = useExamples
-  ? [
-      {
-        title: "Quick start",
-        description: "Install a release and run quickstart.py.",
-        href: "#quick-start",
-        external: false,
-      },
-      {
-        title: "Commercial demo",
-        description: "8,790-heliostat Daggett reference case.",
-        href: "#commercial-demo",
-        external: false,
-      },
-      {
-        title: "Execution backends",
-        description: "CPU, multicore and CUDA.",
-        href: SITE.docs.backend,
-        external: true,
-      },
-      {
-        title: "Benchmarks & reproducibility",
-        description: "Timing boundaries and measured evidence.",
-        href: SITE.docs.reproducibility,
-        external: true,
-      },
-    ]
-  : [
-      {
-        title: "Installation & packaging",
-        description: "Release archives and runtime requirements.",
-        href: SITE.docs.installation,
-        external: true,
-      },
-      {
-        title: "Execution backends",
-        description: "CPU, multicore and CUDA.",
-        href: SITE.docs.backend,
-        external: true,
-      },
-      {
-        title: "Benchmarks & reproducibility",
-        description: "Timing boundaries and measured evidence.",
-        href: SITE.docs.reproducibility,
-        external: true,
-      },
-      {
-        title: "Examples",
-        description: "A synthetic optical simulation.",
-        href: SITE.docs.examples,
-        external: true,
-      },
-    ];
+const resources = [
+  {
+    title: "Execution modes",
+    description: "Select CPU, multicore or CUDA execution.",
+    href: withBase("/docs/execution-modes/"),
+    external: false,
+  },
+  {
+    title: "Build from source",
+    description: "Toolchains, dependencies and native builds.",
+    href: SITE.docs.build,
+    external: true,
+  },
+  {
+    title: "Benchmarks & evidence",
+    description: "Annual measurements and timing boundaries.",
+    href: SITE.docs.benchmarkEvidence,
+    external: true,
+  },
+  {
+    title: "Documentation",
+    description: "Installation, API usage and technical guides.",
+    href: withBase("/docs/"),
+    external: false,
+  },
+];
 ---
 
 <section id="resources" class="site-container py-20 md:py-28">
   <SectionHeader
     label="Documentation"
-    title={useExamples
-      ? "Examples, backends and evidence."
-      : "Guides, benchmarks and evidence."}
+    title="Practical guides and evidence."
   />
 
   <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
@@ -100,17 +67,4 @@ const resources = useExamples
     }
   </div>
 
-  <div class="mt-10">
-    <a
-      href={withBase("/docs/")}
-      class="group inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-accent"
-    >
-      Documentation index
-      <Icon
-        name="arrow-right"
-        size={15}
-        class="transition-transform group-hover:translate-x-0.5"
-      />
-    </a>
-  </div>
 </section>

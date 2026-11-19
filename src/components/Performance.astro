@@ -31,7 +31,7 @@ const rows = commercialAnnual.rows.map((row) => {
   <SectionHeader
     label="Measured performance"
     title="A complete year, measured."
-    lead="Lower execution time is better. Bars show speed-up over Original."
+    lead="Lower execution time is better. Bars show total annual wall-clock speed-up over Original."
   />
 
   <div
@@ -47,7 +47,7 @@ const rows = commercialAnnual.rows.map((row) => {
         {formatSpeedupWhole(maxSpeedup)}
       </p>
       <p class="mt-4 text-sm leading-relaxed text-ink-soft">
-        faster than the Original path
+        faster than the Original path over the annual workload
       </p>
       <p class="mt-1 text-xs leading-relaxed text-muted">
         CUDA GPU · commercial annual example
@@ -124,8 +124,11 @@ const rows = commercialAnnual.rows.map((row) => {
     class="mt-8 flex flex-col gap-3 border-t border-line pt-5 text-xs leading-relaxed text-muted sm:flex-row sm:items-center sm:justify-between"
   >
     <p>
-      CPU modes agree bitwise · CUDA within rtol 1e-9 / atol 1e-10 · Linux,
-      Windows and macOS
+      Total annual wall-clock acceleration, not the speed-up of a single
+      <code class="code-inline">simulate()</code> call. Refactored CPU is
+      single-threaded; Multicore runs independent states concurrently; CUDA
+      uses rolling contexts. CPU modes agree bitwise · CUDA within rtol 1e-9 /
+      atol 1e-10 · Linux, Windows and macOS.
     </p>
     <a
       class="link-underline shrink-0"

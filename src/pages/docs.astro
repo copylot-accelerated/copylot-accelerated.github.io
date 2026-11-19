@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CitationBlock from "../components/CitationBlock.astro";
 import DocLink from "../components/DocLink.astro";
+import Icon from "../components/Icon.astro";
 import { SITE, withBase } from "../config/site";
 import { getReleaseInfo, releaseHasExamples } from "../lib/releases";
 
@@ -10,6 +11,12 @@ const useExamples = releaseHasExamples(release);
 
 const startLinks = useExamples
   ? [
+      {
+        title: "Downloads & installation",
+        description:
+          "Release archives, runtime requirements and verification.",
+        href: withBase("/downloads/"),
+      },
       {
         title: "Quick start",
         description: "Install a release and run quickstart.py.",
@@ -21,27 +28,18 @@ const startLinks = useExamples
           "8,790-heliostat Daggett reference case and offline report.",
         href: withBase("/#commercial-demo"),
       },
-      {
-        title: "Installation and packaging",
-        description: "Archive layout, prerequisites and package validation.",
-        href: SITE.docs.packaging,
-      },
-      {
-        title: "Advanced example",
-        description: "The source-tree optical simulation.",
-        href: SITE.docs.examples,
-      },
     ]
   : [
       {
-        title: "Overview and quick start",
-        description: "Project overview, execution modes and quick start.",
-        href: SITE.docs.readme,
+        title: "Downloads & installation",
+        description:
+          "Release archives, runtime requirements and verification.",
+        href: withBase("/downloads/"),
       },
       {
-        title: "Installation and packaging",
-        description: "Archive layout, prerequisites and package validation.",
-        href: SITE.docs.packaging,
+        title: "Overview and quick start",
+        description: "Project overview and the packaged example.",
+        href: SITE.docs.readme,
       },
       {
         title: "Examples",
@@ -50,78 +48,117 @@ const startLinks = useExamples
       },
     ];
 
+const apiExampleHref = useExamples
+  ? SITE.docs.quickstartSource
+  : SITE.docs.packagedExample;
+const apiExampleDescription = useExamples
+  ? "Complete quickstart.py: create, configure, simulate and free a context."
+  : "The packaged example: configure a field and run a simulation.";
+
 const groups = [
   {
     id: "start",
-    title: "Start here",
+    title: "Getting started",
     links: startLinks,
   },
   {
-    id: "execution",
-    title: "Execution backends",
+    id: "using",
+    title: "Using CoPylot-Accelerated",
     links: [
       {
-        title: "CPU and CUDA selection",
-        description: "Backend selection and supported CUDA configurations.",
+        title: "Execution modes",
+        description:
+          "Choose CPU, multicore or CUDA execution with practical examples.",
+        href: withBase("/docs/execution-modes/"),
+      },
+      {
+        title: "Python API example",
+        description: apiExampleDescription,
+        href: apiExampleHref,
+      },
+      {
+        title: "Backend compatibility",
+        description:
+          "Supported CPU and CUDA configurations, with technical limitations.",
         href: SITE.docs.backend,
       },
-      {
-        title: "Multicore CPU design",
-        description: "Parallel work within and across states.",
-        href: SITE.docs.multicore,
-      },
-      {
-        title: "CUDA validation",
-        description: "The flat-receiver numerical comparison.",
-        href: SITE.docs.cudaValidation,
-      },
     ],
   },
   {
-    id: "build",
-    title: "Build and platforms",
+    id: "validation",
+    title: "Performance & validation",
     links: [
       {
-        title: "Building from source",
-        description: "Toolchains, dependency reconstruction and tests.",
-        href: SITE.docs.build,
-      },
-      {
-        title: "Dependencies",
-        description: "Pinned upstream components and native dependencies.",
-        href: SITE.docs.dependencies,
-      },
-      {
-        title: "Platform status",
-        description: "Build status by operating system and CUDA targets.",
-        href: SITE.docs.platformStatus,
-      },
-    ],
-  },
-  {
-    id: "evidence",
-    title: "Performance and reproducibility",
-    links: [
-      {
-        title: "Benchmark evidence",
-        description: "Archived measurements, provenance and timing boundaries.",
+        title: "Benchmarks and numerical validation",
+        description:
+          "Measurement methodology, timing boundaries and numerical checks.",
         href: SITE.docs.benchmarkEvidence,
       },
       {
-        title: "Public reproducibility",
+        title: "Reproducibility",
         description: "Validate a build or run new measurements.",
         href: SITE.docs.reproducibility,
       },
       {
-        title: "Annual benchmark matrix",
-        description: "Eight complete annual campaigns across two cases.",
+        title: "Annual benchmark matrix (CSV)",
+        description:
+          "Raw dataset: eight complete annual campaigns across two cases.",
         href: SITE.docs.annualMatrix,
+      },
+      {
+        title: "Annual benchmark matrix (JSON)",
+        description: "Raw dataset: the same annual measurements as JSON.",
+        href: SITE.docs.annualMatrixJson,
+      },
+      {
+        title: "Measured toolchain (JSON)",
+        description: "Raw dataset: measured hardware, compiler and libraries.",
+        href: SITE.docs.measuredToolchain,
+      },
+    ],
+  },
+  {
+    id: "development",
+    title: "Development & internals",
+    links: [
+      {
+        title: "Build from source",
+        description: "Toolchains, dependency reconstruction and native tests.",
+        href: SITE.docs.build,
+      },
+      {
+        title: "Multicore implementation",
+        description:
+          "Threading design and deterministic work partitioning.",
+        href: SITE.docs.multicore,
+      },
+      {
+        title: "CUDA implementation",
+        description: "Hybrid image-plane and flux-density design.",
+        href: SITE.docs.cudaHandoff,
+      },
+      {
+        title: "CUDA validation record",
+        description:
+          "Flat-receiver numerical comparison and tested restrictions.",
+        href: SITE.docs.cudaValidation,
+      },
+      {
+        title: "Dependencies",
+        description: "Pinned upstream components and native libraries.",
+        href: SITE.docs.dependencies,
+      },
+      {
+        title: "Packaging and platform status",
+        description:
+          "Archive layout, platform validation and CUDA targets.",
+        href: SITE.docs.packaging,
       },
     ],
   },
   {
     id: "project",
-    title: "Project and licensing",
+    title: "Project & licensing",
     links: [
       {
         title: "Citation and references",
@@ -159,30 +196,64 @@ const groups = [
         Documentation
       </h1>
       <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
-        Guides, benchmark evidence, citation and licensing.
+        Installation, practical usage, benchmark evidence and licensing.
       </p>
       {
         useExamples && (
-          <p class="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-muted">
-            Suggested path:{" "}
-            <a class="link-underline" href={withBase("/#quick-start")}>
-              Quick start
-            </a>{" "}
-            →{" "}
-            <a class="link-underline" href={withBase("/#commercial-demo")}>
-              Commercial demo
-            </a>{" "}
-            →{" "}
-            <a class="link-underline" href="#execution">
-              execution backends
-            </a>{" "}
-            →{" "}
-            <a class="link-underline" href="#evidence">
-              benchmarks and reproducibility
-            </a>
-            .
-          </p>
-        )
+          <div class="mx-auto mt-5 flex max-w-3xl flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-3">
+            <p class="eyebrow shrink-0">Suggested path</p>
+            <nav
+              class="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm"
+              aria-label="Suggested documentation path"
+            >
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <a
+                    class="link-underline font-medium"
+                    href={withBase("/#quick-start")}
+                  >
+                    Quick start
+                  </a>
+                  <Icon
+                    name="arrow-right"
+                    size={15}
+                    class="shrink-0 text-muted"
+                  />
+                </span>
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <a
+                    class="link-underline font-medium"
+                    href={withBase("/#commercial-demo")}
+                  >
+                    Commercial demo
+                  </a>
+                  <Icon
+                    name="arrow-right"
+                    size={15}
+                    class="shrink-0 text-muted"
+                  />
+                </span>
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <a
+                    class="link-underline font-medium"
+                    href={withBase("/docs/execution-modes/")}
+                  >
+                    Execution modes
+                  </a>
+                  <Icon
+                    name="arrow-right"
+                    size={15}
+                    class="shrink-0 text-muted"
+                  />
+                </span>
+                <a
+                  class="link-underline whitespace-nowrap font-medium"
+                  href="#validation"
+                >
+                  Benchmarks and validation
+                </a>
+              </nav>
+            </div>
+          )
       }
     </div>
   </section>
